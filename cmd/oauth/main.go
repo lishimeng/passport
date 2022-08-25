@@ -7,11 +7,9 @@ import (
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
-	"github.com/lishimeng/passport/cmd/passport/ddd"
+	"github.com/lishimeng/passport/cmd/oauth/ddd"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
-	"github.com/lishimeng/passport/static"
-	"net/http"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -60,14 +58,7 @@ func _main() (err error) {
 			model.Tables()...).
 			//SetWebLogLevel("debug").
 			PrintVersion().
-			EnableWeb(etc.Config.Web.Listen, ddd.Route).
-			EnableStaticWeb(func() http.FileSystem {
-				return http.FS(static.Static)
-			})
-		//ComponentBefore(setup.JobClearExpireTask).
-		//ComponentBefore(setup.BeforeStarted).
-		//ComponentAfter(setup.AfterStarted)
-
+			EnableWeb(etc.Config.Web.Listen, ddd.Route)
 		return err
 	}, func(s string) {
 		log.Info(s)
