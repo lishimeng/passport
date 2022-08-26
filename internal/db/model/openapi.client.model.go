@@ -26,6 +26,7 @@ func (t OpenClient) GetUserID() string {
 	return t.AppId
 }
 
-func (t OpenClient) VerifyPassword(psw string) bool {
-	return t.Password == psw
-}
+//
+//func (t OpenClient) VerifyPassword(psw string) bool {
+//	return t.Password == psw
+//}
