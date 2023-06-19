@@ -28,7 +28,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Millisecond * 100)
 }
 
 func _main() (err error) {
