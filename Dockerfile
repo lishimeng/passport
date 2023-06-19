@@ -9,22 +9,24 @@ FROM golang:1.18 as build
 ARG NAME
 ARG VERSION
 ARG COMMIT
+ARG BUILD_TIME
 ARG MAIN_PATH
+ARG BASE="github.com/lishimeng/app-starter/version"
 ENV GOPROXY=https://goproxy.cn,direct
-ENV LDFLAGS=" \
-    -X 'github.com/lishimeng/app-starter/version.AppName=${NAME}' \
-    -X 'github.com/lishimeng/app-starter/version.Version=${VERSION}' \
-    -X 'github.com/lishimeng/app-starter/version.Commit=${COMMIT}' \
-    -X 'github.com/lishimeng/app-starter/version.Build=`date +%FT%T%z`' \
-    -X 'github.com/lishimeng/app-starter/version.Compiler=`go version`' \
+ARG LDFLAGS=" \
+    -X ${BASE}.AppName=${NAME} \
+    -X ${BASE}.Version=${VERSION} \
+    -X ${BASE}.Commit=${COMMIT} \
+    -X ${BASE}.Build=${BUILD_TIME} \
     "
 WORKDIR /release
 ADD . .
 COPY --from=ui /ui_build/dist/ static/
-RUN go mod download && go mod verify
-RUN go build -v --ldflags "${LDFLAGS}" -o ${NAME} ${MAIN_PATH}
 
-FROM ubuntu:22.04 as prod
+RUN go mod download && go mod verify
+RUN go build -v --ldflags "${LDFLAGS} -X ${BASE}.Compiler=$(go version | sed 's/[ ][ ]*/_/g')" -o ${NAME} ${MAIN_PATH}
+
+FROM lishimeng/alpine:3.17 as prod
 ARG NAME
 EXPOSE 80/tcp
 WORKDIR /
