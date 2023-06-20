@@ -1,4 +1,4 @@
-package login
+package signin
 
 import (
 	"github.com/kataras/iris/v12"

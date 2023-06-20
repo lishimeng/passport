@@ -1,4 +1,4 @@
-package login
+package signup
 
 import "github.com/kataras/iris/v12"
 
