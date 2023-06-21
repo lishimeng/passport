@@ -1,6 +1,7 @@
 // 定义内容
 export default {
 	router: {
+		loginRegister:'登录&注册',
 		home: '首页',
 		system: '系统设置',
 		systemMenu: '菜单管理',

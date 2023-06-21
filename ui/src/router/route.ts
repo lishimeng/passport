@@ -158,10 +158,26 @@ export const notFoundAndNoPower = [
  * @returns 返回路由菜单数据
  */
 export const staticRoutes: Array<RouteRecordRaw> = [
-	{
+/*	{
 		path: '/login',
 		name: 'login',
 		component: () => import('/@/views/login/index.vue'),
+		meta: {
+			title: '登录',
+		},
+	},*/
+	{
+		path: '/register',
+		name: 'register',
+		component: () => import('/@/views/loginRegister/register.vue'),
+		meta: {
+			title: '注册',
+		},
+	},
+	{
+		path: '/login',
+		name: 'login',
+		component: () => import('/@/views/loginRegister/login.vue'),
 		meta: {
 			title: '登录',
 		},
