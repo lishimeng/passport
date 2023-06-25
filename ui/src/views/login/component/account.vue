@@ -44,7 +44,7 @@
 			</el-col>
 			<el-col :span="1"></el-col>
 			<el-col :span="8">
-				<el-button class="login-content-code" v-waves>1234</el-button>
+				<el-button @click="authCode" class="login-content-code" v-waves>{{ state.authCode }}</el-button>
 			</el-col>
 		</el-form-item>
 		<el-form-item class="login-animation4">
@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts" name="loginAccount">
-import { reactive, computed } from 'vue';
+import {reactive, computed, onMounted} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
@@ -68,6 +68,7 @@ import { initBackEndControlRoutes } from '/@/router/backEnd';
 import { Session } from '/@/utils/storage';
 import { formatAxis } from '/@/utils/formatTime';
 import { NextLoading } from '/@/utils/loading';
+import {signInApi} from "/@/api/register";
 
 // 定义变量内容
 const { t } = useI18n();
@@ -78,41 +79,83 @@ const router = useRouter();
 const state = reactive({
 	isShowPassword: false,
 	ruleForm: {
-		userName: 'admin',
-		password: '123456',
-		code: '1234',
+		userName: '',
+		password: '',
+		code: '',
 	},
 	loading: {
 		signIn: false,
 	},
+  authCode:""
 });
-
+onMounted(()=>{
+  authCode()
+})
+const authCode = () => {
+  state.authCode=(Math.round(Math.random()*(9999-1000)+1000)).toString()
+}
 // 时间获取
 const currentTime = computed(() => {
 	return formatAxis(new Date());
 });
 // 登录
 const onSignIn = async () => {
+  if(!state.ruleForm.userName){
+    ElMessage.error("用户名不能为空！")
+    return
+  }
+  if(!state.ruleForm.password){
+    ElMessage.error("密码不能为空！")
+    return
+  }
+  if(!state.ruleForm.code){
+    ElMessage.error("验证码不能为空！")
+    authCode()
+    return
+  }
+  if(state.ruleForm.code!=state.authCode){
+    ElMessage.error("验证码错误！")
+    authCode()
+    return
+  }
 	state.loading.signIn = true;
-	// 存储 token 到浏览器缓存
-	Session.set('token', Math.random().toString(36).substr(0));
-	// 模拟数据，对接接口时，记得删除多余代码及对应依赖的引入。用于 `/src/stores/userInfo.ts` 中不同用户登录判断（模拟数据）
-	Cookies.set('userName', state.ruleForm.userName);
-	if (!themeConfig.value.isRequestRoutes) {
-		// 前端控制路由，2、请注意执行顺序
-		const isNoPower = await initFrontEndControlRoutes();
-		signInSuccess(isNoPower);
-	} else {
-		// 模拟后端控制路由，isRequestRoutes 为 true，则开启后端控制路由
-		// 添加完动态路由，再进行 router 跳转，否则可能报错 No match found for location with path "/"
-		const isNoPower = await initBackEndControlRoutes();
-		// 执行完 initBackEndControlRoutes，再执行 signInSuccess
-		signInSuccess(isNoPower);
-	}
+  signInApi({
+    userName: state.ruleForm.userName,
+    password: state.ruleForm.password,
+    code: state.ruleForm.code,
+    loginType:"pc"
+  }).then(res => {
+    if (res && res.code == 200) {
+      console.log(res)
+      ElMessage.success('登录成功！');
+      //外部登录
+      if(route.query.redirect_uri){
+        window.location.href = route.query.redirect_uri;
+      }else{
+        // 存储 token 到浏览器缓存
+        Session.set('token', res.token);
+        // 模拟数据，对接接口时，记得删除多余代码及对应依赖的引入。用于 `/src/stores/userInfo.ts` 中不同用户登录判断（模拟数据）
+        Cookies.set('userName', state.ruleForm.userName);
+        signInSuccess()
+      }
+    }else{
+      ElMessage.error('登录失败！请检查用户名密码！');
+      state.loading.signIn = false;
+    }
+  })
 };
 // 登录成功后的跳转
-const signInSuccess = (isNoPower: boolean | undefined) => {
-	if (isNoPower) {
+const signInSuccess = async () => {
+  let isNoPower=null
+  if (!themeConfig.value.isRequestRoutes) {
+    // 前端控制路由，2、请注意执行顺序
+    isNoPower = await initFrontEndControlRoutes();
+  } else {
+    // 模拟后端控制路由，isRequestRoutes 为 true，则开启后端控制路由
+    // 添加完动态路由，再进行 router 跳转，否则可能报错 No match found for location with path "/"
+    isNoPower = await initBackEndControlRoutes();
+  }
+  if (isNoPower) {
 		ElMessage.warning('抱歉，您没有登录权限');
 		Session.clear();
 	} else {

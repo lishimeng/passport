@@ -8,3 +8,8 @@ host = "192.168.10.32"
 port = 5432
 database = "passport"
 ssl = "disable" #require/verify-full/verify-ca/disable
+
+[token]
+issuer = "domain.com.cn"
+key = "xxxxxxxxxxxxx"
+enable = true

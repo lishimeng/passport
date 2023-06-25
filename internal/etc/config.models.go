@@ -4,6 +4,7 @@ type Configuration struct {
 	Db    db
 	Web   web
 	Redis redis
+	Token token
 }
 
 type web struct {
@@ -24,4 +25,10 @@ type db struct {
 	Port     int
 	Database string
 	Ssl      string
+}
+
+type token struct {
+	Enable bool
+	Issuer string
+	Key    string
 }

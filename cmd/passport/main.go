@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
+	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/passport/cmd/passport/ddd"
@@ -52,6 +53,19 @@ func _main() (err error) {
 			InitDb:    true,
 			AliasName: "default",
 			SSL:       etc.Config.Db.Ssl,
+		}
+
+		if etc.Config.Token.Enable {
+			issuer := etc.Config.Token.Issuer
+			tokenKey := []byte(etc.Config.Token.Key)
+			builder = builder.EnableTokenValidator(func(inject app.TokenValidatorInjectFunc) {
+				provider := token.NewJwtProvider(issuer,
+					token.WithKey(tokenKey, tokenKey), // hs256的秘钥必须是[]byte
+					token.WithAlg("HS256"),
+				)
+				storage := token.NewLocalStorage(provider)
+				inject(storage)
+			})
 		}
 
 		builder.EnableDatabase(dbConfig.Build(),
