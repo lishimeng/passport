@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
+	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
@@ -64,6 +65,7 @@ func _main() (err error) {
 					token.WithAlg("HS256"),
 				)
 				storage := token.NewLocalStorage(provider)
+				factory.Add(provider)
 				inject(storage)
 			})
 		}

@@ -10,6 +10,11 @@ func GetUserInfoById(id int) (info model.Account, err error) {
 	return
 }
 
+func GetUserInfoByCode(code string) (info model.Account, err error) {
+	err = app.GetOrm().Context.QueryTable(new(model.Account)).Filter("Code", code).One(&info)
+	return
+}
+
 func GetUserInfoByName(name string) (info model.Account, err error) {
 	err = app.GetOrm().Context.QueryTable(new(model.Account)).Filter("Name", name).One(&info)
 	return

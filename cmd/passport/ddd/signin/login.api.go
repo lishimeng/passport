@@ -3,11 +3,12 @@ package signin
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/factory"
+	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
 	"github.com/lishimeng/passport/internal/passwd"
-	"github.com/lishimeng/passport/internal/token"
 )
 
 type LoginReq struct {
@@ -52,13 +53,27 @@ func login(ctx iris.Context) {
 	resp.Code = tool.RespCodeSuccess
 	resp.Uid = info.Id
 	log.Info("Uid:%s", info.Id)
-	token, err := token.GenToken("", string(info.Id), req.LoginType)
+	var provider token.JwtProvider
+	err = factory.Get(&provider)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "token 服务异常"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	tokenPayload := token.JwtPayload{
+		Org:    "org_1",
+		Dept:   "dep_1",
+		Uid:    info.Code,
+		Client: req.LoginType,
+	}
+	tokenContent, err := provider.Gen(tokenPayload)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "token生成失败"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	resp.Token = token
+	resp.Token = string(tokenContent)
 	tool.ResponseJSON(ctx, resp)
 }

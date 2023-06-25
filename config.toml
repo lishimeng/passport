@@ -11,5 +11,5 @@ ssl = "disable" #require/verify-full/verify-ca/disable
 
 [token]
 issuer = "domain.com.cn"
-key = "xxxxxxxxxxxxx"
+key = "1234asdfrtyuedcvtainch@r&y%ttghu"
 enable = true
