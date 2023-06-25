@@ -5,6 +5,7 @@ import "github.com/lishimeng/app-starter"
 // Account 账号
 type Account struct {
 	app.Pk
+	Code string `orm:"column(code)"`
 	app.TableChangeInfo
 	Profile
 	IdCard
