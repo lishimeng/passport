@@ -1,6 +1,7 @@
 // 定义内容
 export default {
 	router: {
+		loginRegister:'login&register',
 		home: 'home',
 		system: 'system',
 		systemMenu: 'systemMenu',

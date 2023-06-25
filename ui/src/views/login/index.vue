@@ -28,6 +28,9 @@
 								<el-tab-pane :label="$t('message.label.two2')" name="mobile">
 									<Mobile />
 								</el-tab-pane>
+                <el-tab-pane :label="$t('message.label.three3')" name="register">
+                 <Register/>
+                </el-tab-pane>
 							</el-tabs>
 						</div>
 						<Scan v-if="state.isScan" />
@@ -55,6 +58,7 @@ import loginBg from '/@/assets/login-bg.svg';
 const Account = defineAsyncComponent(() => import('/@/views/login/component/account.vue'));
 const Mobile = defineAsyncComponent(() => import('/@/views/login/component/mobile.vue'));
 const Scan = defineAsyncComponent(() => import('/@/views/login/component/scan.vue'));
+const Register = defineAsyncComponent(() => import('/@/views/login/component/register.vue'));
 
 // 定义变量内容
 const storesThemeConfig = useThemeConfig();

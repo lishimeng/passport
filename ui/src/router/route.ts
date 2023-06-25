@@ -166,4 +166,20 @@ export const staticRoutes: Array<RouteRecordRaw> = [
 			title: '登录',
 		},
 	},
+/*	{
+		path: '/register',
+		name: 'register',
+		component: () => import('/@/views/loginRegister/register.vue'),
+		meta: {
+			title: '注册',
+		},
+	},
+	{
+		path: '/login',
+		name: 'login',
+		component: () => import('/@/views/loginRegister/login.vue'),
+		meta: {
+			title: '登录',
+		},
+	},*/
 ];

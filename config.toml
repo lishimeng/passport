@@ -2,9 +2,14 @@
 listen = ":80"
 
 [db]
-user = "postgres"
-password = "postgres"
-host = "127.0.0.1"
+user = "iot"
+password = "thingple"
+host = "192.168.10.32"
 port = 5432
 database = "passport"
 ssl = "disable" #require/verify-full/verify-ca/disable
+
+[token]
+issuer = "domain.com.cn"
+key = "xxxxxxxxxxxxx"
+enable = true

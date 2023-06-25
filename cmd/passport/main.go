@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"github.com/lishimeng/app-starter"
 	etc2 "github.com/lishimeng/app-starter/etc"
+	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/passport/cmd/passport/ddd"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
-	"github.com/lishimeng/passport/static"
-	"net/http"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -56,14 +55,28 @@ func _main() (err error) {
 			SSL:       etc.Config.Db.Ssl,
 		}
 
+		if etc.Config.Token.Enable {
+			issuer := etc.Config.Token.Issuer
+			tokenKey := []byte(etc.Config.Token.Key)
+			builder = builder.EnableTokenValidator(func(inject app.TokenValidatorInjectFunc) {
+				provider := token.NewJwtProvider(issuer,
+					token.WithKey(tokenKey, tokenKey), // hs256的秘钥必须是[]byte
+					token.WithAlg("HS256"),
+				)
+				storage := token.NewLocalStorage(provider)
+				inject(storage)
+			})
+		}
+
 		builder.EnableDatabase(dbConfig.Build(),
 			model.Tables()...).
 			//SetWebLogLevel("debug").
 			PrintVersion().
-			EnableWeb(etc.Config.Web.Listen, ddd.Route).
-			EnableStaticWeb(func() http.FileSystem {
-				return http.FS(static.Static)
-			})
+			EnableWeb(etc.Config.Web.Listen, ddd.Route)
+		/*.
+		EnableStaticWeb(func() http.FileSystem {
+			return http.FS(static.Static)
+		})*/
 		//ComponentBefore(setup.JobClearExpireTask).
 		//ComponentBefore(setup.BeforeStarted).
 		//ComponentAfter(setup.AfterStarted)
