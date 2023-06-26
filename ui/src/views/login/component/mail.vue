@@ -91,18 +91,16 @@ const login = () => {
   signInCodeApi({
     userName: state.ruleForm.userName,
     code: state.ruleForm.code,
-    loginType: "pc"
+    codeLoginType: "mail"
   }).then(res => {
     if (res && res.code == 200) {
-      // ElMessage.success("登录成功！")
+      // 存储 token 到浏览器缓存
+      Local.set('token', res.token);
+      Session.set('token', res.token);
       //外部登录
       if (route.query.redirect_uri) {
         window.location.href = route.query.redirect_uri;
       } else {
-        // 存储 token 到浏览器缓存
-        Session.set('token', res.token);
-        // 模拟数据，对接接口时，记得删除多余代码及对应依赖的引入。用于 `/src/stores/userInfo.ts` 中不同用户登录判断（模拟数据）
-        Cookies.set('userName', state.ruleForm.userName);
         signInSuccess()
       }
     } else {
@@ -158,11 +156,11 @@ const signInSuccess = async () => {
   state.loading.signIn = false;
 }
 const authCode = async () => {
-  state.authCode=(Math.round(Math.random()*(9999-1000)+1000)).toString()
-  console.log(state.authCode)
+  // state.authCode=(Math.round(Math.random()*(9999-1000)+1000)).toString()
+  // console.log(state.authCode)
   await sendCodeApi({
-    code:state.authCode,
-    loginType:"mail",
+    // code:state.authCode,
+    codeLoginType:"mail",
     mail:state.ruleForm.userName
   }).then(res=>{
     if(res&&res.code==200){

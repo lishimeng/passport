@@ -60,3 +60,8 @@ const (
 	WxLoginType  LoginType = "wx"  //微信登录
 	AppLoginType LoginType = "app" //app登录
 )
+
+const (
+	InActiveDisable = 0 // 未激活
+	ActivateEnable  = 1 // 激活
+)

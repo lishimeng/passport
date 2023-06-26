@@ -65,7 +65,7 @@ import { storeToRefs } from 'pinia';
 import { useThemeConfig } from '/@/stores/themeConfig';
 import { initFrontEndControlRoutes } from '/@/router/frontEnd';
 import { initBackEndControlRoutes } from '/@/router/backEnd';
-import { Session } from '/@/utils/storage';
+import {Local, Session} from '/@/utils/storage';
 import { formatAxis } from '/@/utils/formatTime';
 import { NextLoading } from '/@/utils/loading';
 import {signInApi} from "/@/api/login";
@@ -126,16 +126,13 @@ const onSignIn = async () => {
     loginType:"pc"
   }).then(res => {
     if (res && res.code == 200) {
-      console.log(res)
-      // ElMessage.success('登录成功！');
+      // 存储 token 到浏览器缓存
+      Local.set('token', res.token);
+      Session.set('token', res.token);
       //外部登录
       if(route.query.redirect_uri){
         window.location.href = route.query.redirect_uri;
       }else{
-        // 存储 token 到浏览器缓存
-        Session.set('token', res.token);
-        // 模拟数据，对接接口时，记得删除多余代码及对应依赖的引入。用于 `/src/stores/userInfo.ts` 中不同用户登录判断（模拟数据）
-        Cookies.set('userName', state.ruleForm.userName);
         signInSuccess()
       }
     }else{

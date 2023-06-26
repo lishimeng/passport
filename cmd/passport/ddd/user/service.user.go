@@ -38,3 +38,14 @@ func GetUserInfoByThree(name, mobile, email string) (info model.Account, err err
 	err = app.GetOrm().Context.QueryTable(new(model.Account)).SetCond(cond).One(&info)
 	return
 }
+
+func InsertSocialAccount(socialAccount model.SocialAccount) (info model.SocialAccount, err error) {
+	info = socialAccount
+	_, err = app.GetOrm().Context.Insert(&info)
+	return
+}
+
+func GetSocialAccountById(socialAccountId string) (info model.SocialAccount, err error) {
+	err = app.GetOrm().Context.QueryTable(new(model.SocialAccount)).Filter("SocialAccountId", socialAccountId).One(&info)
+	return
+}

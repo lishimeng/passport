@@ -6,7 +6,7 @@ import {storeToRefs} from 'pinia';
 import {useKeepALiveNames} from '/@/stores/keepAliveNames';
 import {useRoutesList} from '/@/stores/routesList';
 import {useThemeConfig} from '/@/stores/themeConfig';
-import {Session} from '/@/utils/storage';
+import {Local, Session} from '/@/utils/storage';
 import {notFoundAndNoPower, staticRoutes} from '/@/router/route';
 import {initFrontEndControlRoutes} from '/@/router/frontEnd';
 import {initBackEndControlRoutes} from '/@/router/backEnd';
