@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/passport/internal/db/model"
 )
@@ -12,5 +13,14 @@ func GetUserInfoById(id int) (info model.Account, err error) {
 
 func GetUserInfoByName(name string) (info model.Account, err error) {
 	err = app.GetOrm().Context.QueryTable(new(model.Account)).Filter("Name", name).One(&info)
+	return
+}
+
+func GetUserInfoByUserName(userName string) (info model.Account, err error) {
+	cond := orm.NewCondition()
+	cond = cond.Or("Name", userName)
+	cond = cond.Or("Mobile", userName)
+	cond = cond.Or("Email", userName)
+	err = app.GetOrm().Context.QueryTable(new(model.Account)).SetCond(cond).One(&info)
 	return
 }

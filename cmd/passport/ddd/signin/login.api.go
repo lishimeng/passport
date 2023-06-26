@@ -62,3 +62,34 @@ func login(ctx iris.Context) {
 	resp.Token = token
 	tool.ResponseJSON(ctx, resp)
 }
+
+func codeLogin(ctx iris.Context) {
+	var resp LoginResp
+	var req LoginReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "json解析失败"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	info, err := user.GetUserInfoByUserName(req.UserName)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "请先绑定邮箱/手机"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	resp.Code = tool.RespCodeSuccess
+	resp.Uid = info.Id
+	log.Info("Uid:%s", info.Id)
+	token, err := token.GenToken("", string(info.Id), req.LoginType)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "token生成失败"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	resp.Token = token
+	tool.ResponseJSON(ctx, resp)
+}

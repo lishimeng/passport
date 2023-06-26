@@ -68,7 +68,7 @@ import { initBackEndControlRoutes } from '/@/router/backEnd';
 import { Session } from '/@/utils/storage';
 import { formatAxis } from '/@/utils/formatTime';
 import { NextLoading } from '/@/utils/loading';
-import {signInApi} from "/@/api/register";
+import {signInApi} from "/@/api/login";
 
 // 定义变量内容
 const { t } = useI18n();
@@ -127,7 +127,7 @@ const onSignIn = async () => {
   }).then(res => {
     if (res && res.code == 200) {
       console.log(res)
-      ElMessage.success('登录成功！');
+      // ElMessage.success('登录成功！');
       //外部登录
       if(route.query.redirect_uri){
         window.location.href = route.query.redirect_uri;

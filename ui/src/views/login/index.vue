@@ -29,11 +29,12 @@
 									<Mobile />
 								</el-tab-pane>
                 <el-tab-pane :label="$t('message.label.three3')" name="register">
-                 <Register/>
+                 <Mail/>
                 </el-tab-pane>
 							</el-tabs>
 						</div>
-						<Scan v-if="state.isScan" />
+<!--						<Scan v-if="state.isScan" />-->
+            <Register v-if="state.isScan" />
 						<div class="login-content-main-sacn" @click="state.isScan = !state.isScan">
 							<i class="iconfont" :class="state.isScan ? 'icon-diannao1' : 'icon-barcode-qr'"></i>
 							<div class="login-content-main-sacn-delta"></div>
@@ -59,6 +60,7 @@ const Account = defineAsyncComponent(() => import('/@/views/login/component/acco
 const Mobile = defineAsyncComponent(() => import('/@/views/login/component/mobile.vue'));
 const Scan = defineAsyncComponent(() => import('/@/views/login/component/scan.vue'));
 const Register = defineAsyncComponent(() => import('/@/views/login/component/register.vue'));
+const Mail = defineAsyncComponent(() => import('/@/views/login/component/mail.vue'));
 
 // 定义变量内容
 const storesThemeConfig = useThemeConfig();

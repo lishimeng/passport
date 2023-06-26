@@ -2,8 +2,8 @@
 export default {
 	label: {
 		one1: 'User name login',
-		two2: 'Mobile number',
-		three3:'register'
+		two2: 'Mobile number login',
+		three3:'Email login'
 	},
 	link: {
 		one3: 'Third party login',
@@ -22,6 +22,9 @@ export default {
 		btnText: 'Sign in',
 		msgText:
 			'Warm tip: it is recommended to use Google, Microsoft edge, version 79.0.1072.62 and above browsers, and 360 browser, please use speed mode',
+	},
+	mail:{
+		mail:"Please input Email",
 	},
 	scan: {
 		text: 'Open the mobile phone to scan and quickly log in / register',

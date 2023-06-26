@@ -34,6 +34,12 @@ const viteConfig = defineConfig((mode: ConfigEnv) => {
 					changeOrigin: true,
 					// rewrite: (path) => path.replace(/^\/gitee/, ''),
 				},
+				'/owl': {
+					target: 'http://localhost:81',
+					ws: true,
+					changeOrigin: true,
+					rewrite: (path) => path.replace(/^\/owl/, ''),
+				},
 			},
 		},
 		build: {
