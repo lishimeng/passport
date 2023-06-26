@@ -1,10 +1,11 @@
 package etc
 
 type Configuration struct {
-	Db    db
-	Web   web
-	Redis redis
-	Token token
+	Db     db
+	Web    web
+	Redis  redis
+	Token  token
+	Notify notify
 }
 
 type web struct {
@@ -31,4 +32,12 @@ type token struct {
 	Enable bool
 	Issuer string
 	Key    string
+}
+
+type notify struct {
+	Host         string
+	Mail         string
+	MailTemplate string
+	Sms          string
+	SmsTemplate  string
 }

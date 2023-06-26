@@ -9,7 +9,20 @@ port = 5432
 database = "passport"
 ssl = "disable" #require/verify-full/verify-ca/disable
 
+[redis]
+enable = false
+addr = "192.168.10.53:6379"
+password = "redis252"
+db = 0
+
 [token]
 issuer = "domain.com.cn"
 key = "1234asdfrtyuedcvtainch@r&y%ttghu"
 enable = true
+
+[notify]
+host = "http://localhost:81"
+mail = "/api/v2/messages/mail"
+mailTemplate="tl_mail_bb5aa5904acabd1fbceda57009152c95"
+sms = ""
+smsTemplate=""

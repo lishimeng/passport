@@ -7,6 +7,7 @@ import (
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/passport/internal/db/model"
 )
 
 type UserResp struct {
@@ -28,9 +29,7 @@ func GetUserInfo(ctx iris.Context) {
 	if !ok {
 		return
 	}
-
 	log.Debug("code:%s", jwt.Uid)
-
 	account, err := GetUserInfoByCode(jwt.Uid)
 	if err != nil {
 		resp.Code = tool.RespCodeError
@@ -47,13 +46,48 @@ func GetUserInfo(ctx iris.Context) {
 	return
 }
 
-func tokenDecod(token string) (uid int, err error) {
-	/*	var info *jwt.VerifiedToken
-		info, err = token.VerifyToken(token)
-		if err != nil {
-			return
-		}
-		log.Debug("info :%s", info)
-		log.Debug("info :%s", string(info.Payload))*/
-	return
+type SocialReq struct {
+	SocialAccountId string `json:"socialAccountId,omitempty"`
+	SocialGroupId   string `json:"socialGroupId,omitempty"`
+	Category        string `json:"category,omitempty"`
+}
+
+func BindUser(ctx iris.Context) {
+	var req SocialReq
+	var resp app.Response
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "json解析失败"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	ui := ctx.Values().Get(auth.UserInfoKey)
+	jwt, ok := ui.(token.JwtPayload)
+	if !ok {
+		return
+	}
+	log.Debug("code:%s", jwt.Uid)
+	account, err := GetUserInfoByCode(jwt.Uid)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "未查到记录"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	var socialAccount = model.SocialAccount{
+		AccountId:       account.Id,
+		SocialAccountId: req.SocialAccountId,
+		SocialGroupId:   req.SocialGroupId,
+		Category:        model.SocialCategory(req.Category),
+	}
+	_, err = InsertSocialAccount(socialAccount)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "绑定失败"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }

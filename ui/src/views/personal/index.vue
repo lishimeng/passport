@@ -12,7 +12,7 @@
 						</div>
 						<div class="personal-user-right">
 							<el-row>
-								<el-col :span="24" class="personal-title mb18">{{ currentTime }},admin</el-col>
+								<el-col :span="24" class="personal-title mb18">{{ currentTime }},{{ userInfos.userName }}</el-col>
 								<el-col :span="24">
 									<el-row>
 										<el-col :xs="24" :sm="8" class="personal-item mb6">
@@ -67,7 +67,11 @@
 import { reactive, computed } from 'vue';
 import { formatAxis } from '/@/utils/formatTime';
 import { newsInfoList } from './mock';
-
+import {Session} from "/@/utils/storage";
+import {storeToRefs} from "pinia";
+import {useUserInfo} from "/@/stores/userInfo";
+const stores = useUserInfo();
+const { userInfos } = storeToRefs(stores);
 // 定义变量内容
 const state = reactive<PersonalState>({
 	newsInfoList,

@@ -48,7 +48,7 @@ import {formatAxis} from "/@/utils/formatTime";
 import {useThemeConfig} from "/@/stores/themeConfig";
 import {storeToRefs} from "pinia";
 import {NextLoading} from "/@/utils/loading";
-import {signInApi} from "/@/api/register";
+import {signInApi} from "/@/api/login";
 
 const {t} = useI18n();
 const storesThemeConfig = useThemeConfig();
