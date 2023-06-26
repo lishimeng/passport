@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/cache"
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
@@ -67,11 +68,19 @@ func _main() (err error) {
 				inject(storage)
 			})
 		}
-
+		redisOpts := cache.RedisOptions{
+			Addr:     etc.Config.Redis.Addr,
+			Password: etc.Config.Redis.Password,
+		}
+		cacheOpts := cache.Options{
+			MaxSize: 10000,
+			Ttl:     time.Hour * 24,
+		}
 		builder.EnableDatabase(dbConfig.Build(),
 			model.Tables()...).
 			//SetWebLogLevel("debug").
 			PrintVersion().
+			EnableCache(redisOpts, cacheOpts).
 			EnableWeb(etc.Config.Web.Listen, ddd.Route)
 		/*.
 		EnableStaticWeb(func() http.FileSystem {

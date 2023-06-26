@@ -1,4 +1,4 @@
-package register
+package signup
 
 import (
 	"github.com/lishimeng/app-starter"

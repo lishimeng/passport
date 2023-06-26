@@ -52,7 +52,7 @@ import {useThemeConfig} from "/@/stores/themeConfig";
 import {storeToRefs} from "pinia";
 import {useRoute, useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
-import {sendMailApi} from "/@/api/send";
+import {sendCodeApi} from "/@/api/send";
 
 const storesThemeConfig = useThemeConfig();
 const {themeConfig} = storeToRefs(storesThemeConfig);
@@ -164,18 +164,13 @@ const signInSuccess = async () => {
 const authCode = async () => {
   state.authCode=(Math.round(Math.random()*(9999-1000)+1000)).toString()
   console.log(state.authCode)
-  await sendMailApi({
-    template:"tl_mail_bb5aa5904acabd1fbceda57009152c95",
-    subject:"验证码",
-    receiver:state.ruleForm.userName,
-    textContent:"",
-    params:{
-      verrificationCode:state.authCode
-    }
+  await sendCodeApi({
+    code:state.authCode,
+    loginType:"mail",
+    mail:state.ruleForm.userName
   }).then(res=>{
     if(res&&res.code==200){
       ElMessage.success("邮件发送成功，请注意查收！")
-      Local.set("verrificationCode",state.authCode)
     }else{
       ElMessage.error("邮件发送失败！")
     }

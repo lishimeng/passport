@@ -1,4 +1,4 @@
-import {post} from "/@/utils/request";
+import {get, post} from "/@/utils/request";
 
-const baseUrl = "/owl"
-export const sendMailApi = (p: object) => post(baseUrl + "/api/v2/messages/mail", p);
+const baseUrl = "/api"
+export const sendCodeApi = (p: object) => get(baseUrl + "/sign_in/sendCode", p);

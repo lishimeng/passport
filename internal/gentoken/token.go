@@ -1,4 +1,4 @@
-package token
+package gentoken
 
 import (
 	"github.com/kataras/jwt"

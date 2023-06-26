@@ -44,3 +44,18 @@ type Profile struct {
 	Avatar string `orm:"column(avatar);null"` // 头像
 	Active int    `orm:"column(active);null"` // 激活(完成MFA其中一项都可以判定为激活)
 }
+
+type NotifyType string
+
+const (
+	SmsNotifyType  NotifyType = "sms"  //短信验证
+	MailNotifyType NotifyType = "mail" //邮箱验证
+)
+
+type LoginType string
+
+const (
+	PcLoginType  LoginType = "pc"  //pc登录
+	WxLoginType  LoginType = "wx"  //微信登录
+	AppLoginType LoginType = "app" //app登录
+)

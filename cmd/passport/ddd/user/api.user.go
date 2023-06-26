@@ -30,14 +30,3 @@ func GetUserInfo(ctx iris.Context) {
 	resp.Item = account
 	return
 }
-
-func tokenDecod(token string) (uid int, err error) {
-	/*	var info *jwt.VerifiedToken
-		info, err = token.VerifyToken(token)
-		if err != nil {
-			return
-		}
-		log.Debug("info :%s", info)
-		log.Debug("info :%s", string(info.Payload))*/
-	return
-}

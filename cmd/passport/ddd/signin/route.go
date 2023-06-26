@@ -6,4 +6,5 @@ func Route(root iris.Party) {
 
 	root.Post("/", login)
 	root.Post("/code", codeLogin)
+	root.Get("/sendCode", sendCode)
 }
