@@ -3,7 +3,9 @@ module github.com/lishimeng/passport
 go 1.18
 
 require (
+	github.com/beego/beego/v2 v2.0.7
 	github.com/kataras/iris/v12 v12.2.0
+	github.com/kataras/jwt v0.1.8
 	github.com/lib/pq v1.10.5
 	github.com/lishimeng/app-starter v1.11.1
 	github.com/lishimeng/go-log v1.0.0
@@ -19,7 +21,6 @@ require (
 	github.com/ZZMarquis/gm v1.3.2 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/beego/beego/v2 v2.0.7 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/eclipse/paho.mqtt.golang v1.4.2 // indirect
@@ -40,7 +41,6 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kataras/blocks v0.0.7 // indirect
 	github.com/kataras/golog v0.1.8 // indirect
-	github.com/kataras/jwt v0.1.8 // indirect
 	github.com/kataras/pio v0.0.11 // indirect
 	github.com/kataras/sitemap v0.0.6 // indirect
 	github.com/kataras/tunnel v0.0.4 // indirect

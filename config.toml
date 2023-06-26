@@ -11,13 +11,13 @@ ssl = "disable" #require/verify-full/verify-ca/disable
 
 [redis]
 enable = false
-addr = "localhost:6379"
-# password = "redis"
+addr = "192.168.10.53:6379"
+password = "redis252"
 db = 0
 
 [token]
 issuer = "domain.com.cn"
-key = "xxxxxxxxxxxxx"
+key = "1234asdfrtyuedcvtainch@r&y%ttghu"
 enable = true
 
 [notify]

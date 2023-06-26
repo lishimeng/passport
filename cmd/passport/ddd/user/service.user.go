@@ -16,11 +16,25 @@ func GetUserInfoByName(name string) (info model.Account, err error) {
 	return
 }
 
+func GetUserInfoByCode(code string) (info model.Account, err error) {
+	err = app.GetOrm().Context.QueryTable(new(model.Account)).Filter("Code", code).One(&info)
+	return
+}
+
 func GetUserInfoByUserName(userName string) (info model.Account, err error) {
 	cond := orm.NewCondition()
 	cond = cond.Or("Name", userName)
 	cond = cond.Or("Mobile", userName)
 	cond = cond.Or("Email", userName)
+	err = app.GetOrm().Context.QueryTable(new(model.Account)).SetCond(cond).One(&info)
+	return
+}
+
+func GetUserInfoByThree(name, mobile, email string) (info model.Account, err error) {
+	cond := orm.NewCondition()
+	cond = cond.Or("Name", name)
+	cond = cond.Or("Mobile", mobile)
+	cond = cond.Or("Email", email)
 	err = app.GetOrm().Context.QueryTable(new(model.Account)).SetCond(cond).One(&info)
 	return
 }

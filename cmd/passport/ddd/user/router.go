@@ -6,5 +6,5 @@ import (
 )
 
 func Route(root iris.Party) {
-	root.Get("/getUserInfoByToken", midware.WithAuth(GetUserInfo)...)
+	root.Get("/getUserInfo", midware.WithAuth(GetUserInfo)...)
 }

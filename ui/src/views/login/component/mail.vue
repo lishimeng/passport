@@ -87,10 +87,6 @@ const login = () => {
     ElMessage.error("请输入正确的邮箱！")
     return
   }
-  if(state.ruleForm.code!=Local.get("verrificationCode")){
-    ElMessage.error("验证码错误！")
-    return
-  }
   state.loading.signIn = true;
   signInCodeApi({
     userName: state.ruleForm.userName,

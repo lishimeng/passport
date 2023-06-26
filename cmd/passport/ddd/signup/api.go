@@ -25,10 +25,10 @@ func register(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	_, err = user.GetUserInfoByName(req.Name)
+	_, err = user.GetUserInfoByThree(req.Name, req.Mobile, req.Email)
 	if err == nil {
 		resp.Code = tool.RespCodeError
-		resp.Message = "注册失败,用户名已存在"
+		resp.Message = "注册失败,用户名/邮箱/手机号已被使用"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
