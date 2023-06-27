@@ -13,7 +13,6 @@ type web struct {
 }
 
 type redis struct {
-	Enable   bool
 	Addr     string
 	Password string
 	Db       int

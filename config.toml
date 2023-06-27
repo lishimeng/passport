@@ -10,7 +10,6 @@ database = "passport"
 ssl = "disable" #require/verify-full/verify-ca/disable
 
 [redis]
-enable = false
 addr = "192.168.10.53:6379"
 password = "redis252"
 db = 0
