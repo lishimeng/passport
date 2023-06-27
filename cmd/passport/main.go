@@ -46,6 +46,9 @@ func _main() (err error) {
 		if err != nil {
 			return err
 		}
+
+		etc.TokenTTL = time.Hour * 24 // TODO
+
 		dbConfig := persistence.PostgresConfig{
 			UserName:  etc.Config.Db.User,
 			Password:  etc.Config.Db.Password,
@@ -64,6 +67,7 @@ func _main() (err error) {
 				provider := token.NewJwtProvider(issuer,
 					token.WithKey(tokenKey, tokenKey), // hs256的秘钥必须是[]byte
 					token.WithAlg("HS256"),
+					token.WithDefaultTTL(etc.TokenTTL),
 				)
 				storage := token.NewLocalStorage(provider)
 				factory.Add(provider)
@@ -76,7 +80,7 @@ func _main() (err error) {
 		}
 		cacheOpts := cache.Options{
 			MaxSize: 10000,
-			Ttl:     time.Hour * 24,
+			Ttl:     etc.TokenTTL,
 		}
 		builder.EnableDatabase(dbConfig.Build(),
 			model.Tables()...).
