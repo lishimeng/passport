@@ -3,7 +3,9 @@ package signin
 import (
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/passport/internal/db/model"
+	"github.com/lishimeng/passport/internal/etc"
 )
 
 func AccountLogin(userName, password string) (info model.Account, err error) {
@@ -19,5 +21,11 @@ func AccountLogin(userName, password string) (info model.Account, err error) {
 	if err != nil {
 		return
 	}
+	return
+}
+
+func saveToken(tokenContent []byte) (err error) {
+	key := token.Digest(tokenContent)
+	err = app.GetCache().SetTTL(key, string(tokenContent), etc.TokenTTL)
 	return
 }
