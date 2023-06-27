@@ -133,8 +133,8 @@ github.com/lishimeng/go-orm v1.2.2 h1:woLBaC8Jsx2zV5vDvQ/237tKRj1yp4fYulNJmD8xV8
 github.com/lishimeng/go-orm v1.2.2/go.mod h1:hzaPqV9DnRHI8PuMjRNLr6JB2isGj4C4tOH8J6QB2fs=
 github.com/lishimeng/log4go v1.0.0 h1:oQMcyx/jby6jVCZ4ywnMP+tvZoRL4L3sKYktxTX0DFQ=
 github.com/lishimeng/log4go v1.0.0/go.mod h1:7CZh60epG3cgLa4RpxzFRzYVbQzp7lXmBMlMho1cRbE=
-github.com/lishimeng/owl-messager v0.6.0 h1:awVjC7DLEOf9hZu5TmIYsFtZ8bFZOclnHKkfGbLRWKk=
-github.com/lishimeng/owl-messager v0.6.0/go.mod h1:NwNc8pFbHsNUxoh5egUgyXptrCrS4Pl7LROSj5fm//c=
+github.com/lishimeng/owl-messager v0.6.1 h1:mp9xUNsxZhKZX1unD0wBhLSmHCjZQkPwnwmmIkmYOd0=
+github.com/lishimeng/owl-messager v0.6.1/go.mod h1:NwNc8pFbHsNUxoh5egUgyXptrCrS4Pl7LROSj5fm//c=
 github.com/magiconair/properties v1.8.5 h1:b6kJs+EmPFMYGkow9GiUyCyOvIwYetYJ3fSaWak/Gls=
 github.com/magiconair/properties v1.8.5/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
 github.com/mailgun/raymond/v2 v2.0.48 h1:5dmlB680ZkFG2RN/0lvTAghrSxIESeu9/2aeDqACtjw=
