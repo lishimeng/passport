@@ -13,7 +13,6 @@ import (
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/notify"
 	"github.com/lishimeng/passport/internal/passwd"
-	"github.com/lishimeng/passport/internal/sendmessage"
 	"time"
 )
 
@@ -184,21 +183,8 @@ func sendCode(ctx iris.Context) {
 	case string(model.SmsNotifyType):
 		//todo
 	case string(model.MailNotifyType):
-		template, err := notify.GetSighInEmailTemplate()
-		if err != nil {
-			resp.Code = tool.RespCodeError
-			resp.Message = "模版不存在！"
-			tool.ResponseJSON(ctx, resp)
-			return
-		}
-		var sms = sendmessage.Req{
-			Template:      template.Template,
-			TemplateParam: "{\"verrificationCode\":\"" + code + "\"}",
-			Subject:       "验证码",
-			Receiver:      mail,
-		}
-		response, err := sendmessage.SendMail(sms)
-		if err != nil || response.Code != float64(tool.RespCodeSuccess) {
+		sendMail, err := notify.SighInSendMail(code, mail)
+		if err != nil || sendMail.Code != float64(tool.RespCodeSuccess) {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码发送失败,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)

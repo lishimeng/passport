@@ -34,9 +34,5 @@ type token struct {
 }
 
 type notify struct {
-	Host         string
-	Mail         string
-	MailTemplate string
-	Sms          string
-	SmsTemplate  string
+	Host string
 }
