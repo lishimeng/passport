@@ -7,6 +7,7 @@ func Tables() (t []interface{}) {
 		new(Tenant),
 		new(TenantAccount),
 		new(SocialAccount),
+		new(Notify),
 	)
 	return
 }
