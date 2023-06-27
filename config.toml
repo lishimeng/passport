@@ -20,8 +20,6 @@ key = "1234asdfrtyuedcvtainch@r&y%ttghu"
 enable = true
 
 [notify]
-host = "http://localhost:81"
-mail = "/api/v2/messages/mail"
-mailTemplate="tl_mail_bb5aa5904acabd1fbceda57009152c95"
-sms = ""
-smsTemplate=""
+host = "http://localhost:81/api"
+
+
