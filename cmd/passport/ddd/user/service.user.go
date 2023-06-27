@@ -41,6 +41,7 @@ func GetUserInfoByThree(name, mobile, email string) (info model.Account, err err
 
 func InsertSocialAccount(socialAccount model.SocialAccount) (info model.SocialAccount, err error) {
 	info = socialAccount
+	info.Status = 1
 	_, err = app.GetOrm().Context.Insert(&info)
 	return
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
 	"github.com/lishimeng/passport/internal/common"
 	"github.com/lishimeng/passport/internal/db/model"
-	"github.com/lishimeng/passport/internal/etc"
+	"github.com/lishimeng/passport/internal/notify"
 	"github.com/lishimeng/passport/internal/passwd"
 	"github.com/lishimeng/passport/internal/sendmessage"
 	"time"
@@ -184,8 +184,15 @@ func sendCode(ctx iris.Context) {
 	case string(model.SmsNotifyType):
 		//todo
 	case string(model.MailNotifyType):
+		template, err := notify.GetSighInEmailTemplate()
+		if err != nil {
+			resp.Code = tool.RespCodeError
+			resp.Message = "模版不存在！"
+			tool.ResponseJSON(ctx, resp)
+			return
+		}
 		var sms = sendmessage.Req{
-			Template:      etc.Config.Notify.MailTemplate,
+			Template:      template.Template,
 			TemplateParam: "{\"verrificationCode\":\"" + code + "\"}",
 			Subject:       "验证码",
 			Receiver:      mail,
