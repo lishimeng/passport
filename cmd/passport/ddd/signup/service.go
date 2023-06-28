@@ -11,6 +11,7 @@ func RegisterAccount(mobile, email, password, name string) (info model.Account, 
 	info.Email = email
 	info.Password = password
 	info.Name = name
+	info.Status = model.ActivateEnable
 	info.Code = tool.GetRandomString(16) // 随机code 以后升级一下lib,改为tool.uuid
 	_, err = app.GetOrm().Context.Insert(&info)
 	return

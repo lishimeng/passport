@@ -22,4 +22,6 @@ enable = true
 [notify]
 host = "http://localhost:81/api"
 
-
+[ttl]
+time = 24
+timeType= "Hour"

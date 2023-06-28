@@ -50,3 +50,13 @@ func GetSocialAccountById(socialAccountId string) (info model.SocialAccount, err
 	err = app.GetOrm().Context.QueryTable(new(model.SocialAccount)).Filter("SocialAccountId", socialAccountId).One(&info)
 	return
 }
+
+func GetTenantById(id int) (info model.Tenant, err error) {
+	err = app.GetOrm().Context.QueryTable(new(model.Tenant)).Filter("Id", id).One(&info)
+	return
+}
+
+func GetTenantAccountByUid(uid int) (info model.TenantAccount, err error) {
+	err = app.GetOrm().Context.QueryTable(new(model.TenantAccount)).Filter("Uid", uid).One(&info)
+	return
+}
