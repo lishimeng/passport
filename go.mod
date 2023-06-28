@@ -10,7 +10,7 @@ require (
 	github.com/lishimeng/app-starter v1.11.5
 	github.com/lishimeng/go-log v1.0.0
 	github.com/lishimeng/go-orm v1.2.2
-	github.com/lishimeng/owl-messager v0.6.0
+	github.com/lishimeng/owl-messager v0.6.1
 )
 
 require (

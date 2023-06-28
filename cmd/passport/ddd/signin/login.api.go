@@ -11,9 +11,8 @@ import (
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
 	"github.com/lishimeng/passport/internal/common"
 	"github.com/lishimeng/passport/internal/db/model"
-	"github.com/lishimeng/passport/internal/etc"
+	"github.com/lishimeng/passport/internal/notify"
 	"github.com/lishimeng/passport/internal/passwd"
-	"github.com/lishimeng/passport/internal/sendmessage"
 	"time"
 )
 
@@ -158,6 +157,9 @@ func codeLogin(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
+	go func() {
+		_ = saveToken(tokenContent)
+	}()
 	resp.Token = string(tokenContent)
 	tool.ResponseJSON(ctx, resp)
 }
@@ -184,14 +186,8 @@ func sendCode(ctx iris.Context) {
 	case string(model.SmsNotifyType):
 		//todo
 	case string(model.MailNotifyType):
-		var sms = sendmessage.Req{
-			Template:      etc.Config.Notify.MailTemplate,
-			TemplateParam: "{\"verrificationCode\":\"" + code + "\"}",
-			Subject:       "验证码",
-			Receiver:      mail,
-		}
-		response, err := sendmessage.SendMail(sms)
-		if err != nil || response.Code != float64(tool.RespCodeSuccess) {
+		sendMail, err := notify.SighInSendMail(code, mail)
+		if err != nil || sendMail.Code != float64(tool.RespCodeSuccess) {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码发送失败,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
