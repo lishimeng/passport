@@ -222,16 +222,16 @@ func openLogin(ctx iris.Context) {
 
 func sendCode(ctx iris.Context) {
 	var resp app.Response
-	mail := ctx.URLParam("mail")
+	receiver := ctx.URLParam("receiver")
 	codeLoginType := ctx.URLParam("codeLoginType")
 	var value string
-	err := app.GetCache().Get(mail, &value)
+	err := app.GetCache().Get(receiver, &value)
 	if err != nil {
-		log.Info("获取缓存验证码失败%s：%s", mail, err)
+		log.Info("获取缓存验证码失败%s：%s", receiver, err)
 	}
 	//生成4位验证码
 	var code = common.RandCode(4)
-	log.Debug("code:%s", value)
+	log.Debug("code:%s", code)
 	if len(value) > 0 {
 		resp.Code = tool.RespCodeError
 		resp.Message = "验证码已发送,请稍后重试！"
@@ -240,11 +240,19 @@ func sendCode(ctx iris.Context) {
 	}
 	switch codeLoginType {
 	case string(model.SmsNotifyType):
-		//todo
+		log.Info("发送短信：%s", receiver)
+		sms, err := notify.SighInSendSms(code, receiver)
+		if err != nil || sms.Code != float64(tool.RespCodeSuccess) {
+			resp.Code = tool.RespCodeError
+			resp.Message = "验证码发送失败,请稍后重试！"
+			tool.ResponseJSON(ctx, resp)
+			return
+		}
 		break
 	case string(model.MailNotifyType):
-		sendMail, err := notify.SighInSendMail(code, mail)
-		if err != nil || sendMail.Code != float64(tool.RespCodeSuccess) {
+		log.Info("发送邮件：%s", receiver)
+		mail, err := notify.SighInSendMail(code, receiver)
+		if err != nil || mail.Code != float64(tool.RespCodeSuccess) {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码发送失败,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
@@ -253,7 +261,7 @@ func sendCode(ctx iris.Context) {
 		break
 	}
 	//缓存验证码 3分钟过期 key=邮箱
-	err = app.GetCache().SetTTL(mail, code, time.Minute*3)
+	err = app.GetCache().SetTTL(receiver, code, time.Minute*3)
 	if err != nil {
 		log.Info("缓存验证码失败：%s", err)
 	}

@@ -161,12 +161,15 @@ const authCode = async () => {
   await sendCodeApi({
     // code:state.authCode,
     codeLoginType:"mail",
-    mail:state.ruleForm.userName
+    receiver:state.ruleForm.userName
   }).then(res=>{
     if(res&&res.code==200){
       ElMessage.success("邮件发送成功，请注意查收！")
     }else{
       ElMessage.error("邮件发送失败！")
+      state.showCode = true
+      state.codeText = "获取验证码";
+      clearInterval(state.setIntervalTime);
     }
   })
 }
