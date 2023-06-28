@@ -13,6 +13,8 @@ import (
 	"github.com/lishimeng/passport/cmd/passport/ddd"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
+	"github.com/lishimeng/passport/static"
+	"net/http"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -96,11 +98,10 @@ func _main() (err error) {
 			//SetWebLogLevel("debug").
 			PrintVersion().
 			EnableCache(redisOpts, cacheOpts).
-			EnableWeb(etc.Config.Web.Listen, ddd.Route)
-		/*.
-		EnableStaticWeb(func() http.FileSystem {
-			return http.FS(static.Static)
-		})*/
+			EnableWeb(etc.Config.Web.Listen, ddd.Route).
+			EnableStaticWeb(func() http.FileSystem {
+				return http.FS(static.Static)
+			})
 		//ComponentBefore(setup.JobClearExpireTask).
 		//ComponentBefore(setup.BeforeStarted).
 		//ComponentAfter(setup.AfterStarted)
