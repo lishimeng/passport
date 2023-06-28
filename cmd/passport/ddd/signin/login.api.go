@@ -27,12 +27,45 @@ type CodeLoginReq struct {
 	UserName      string `json:"userName,omitempty"`
 	Code          string `json:"code,omitempty"`
 	CodeLoginType string `json:"codeLoginType,omitempty"` //登录方式-sms/mail
+	LoginType     string `json:"loginType,omitempty"`     //登录方式-pc/app/wx
 }
 
 type LoginResp struct {
 	app.Response
 	Token string `json:"token,omitempty"`
 	Uid   int    `json:"uid,omitempty"`
+}
+
+func getToken(uid int, uCode, loginType string) (tokenVal []byte, err error) {
+	var tokenPayload token.JwtPayload
+	tokenPayload.Uid = uCode
+	tokenPayload.Client = loginType
+	tenantAccount, err := user.GetTenantAccountByUid(uid)
+	if err != nil {
+		// 不在组织里
+		log.Debug("不在组织里:%s", uCode)
+		tokenVal, err = genToken(tokenPayload)
+		return
+	}
+	tenant, err := user.GetTenantById(tenantAccount.Org)
+	if err == nil {
+		tokenPayload.Org = tenant.Code
+	} else {
+		log.Debug("组织不存在, id:%d", tenantAccount.Org)
+	}
+	tokenVal, err = genToken(tokenPayload)
+	return
+}
+
+func genToken(payload token.JwtPayload) (content []byte, err error) {
+	var provider token.JwtProvider
+	err = factory.Get(&provider)
+	if err != nil {
+		return
+	}
+	log.Info("tokenPayload: %s", payload)
+	content, err = provider.Gen(payload)
+	return
 }
 
 func login(ctx iris.Context) {
@@ -61,27 +94,17 @@ func login(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	var provider token.JwtProvider
-	err = factory.Get(&provider)
+	tokenContent, err := getToken(info.Id, info.Code, req.LoginType)
 	if err != nil {
 		resp.Code = tool.RespCodeError
-		resp.Message = "token 服务异常"
+		resp.Message = "token获取失败"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	tokenPayload := token.JwtPayload{
-		Org:    "org_1",
-		Dept:   "dep_1",
-		Uid:    info.Code,
-		Client: req.LoginType,
-	}
-	tokenContent, err := provider.Gen(tokenPayload)
-	if err != nil {
-		resp.Code = tool.RespCodeError
-		resp.Message = "token生成失败"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
+	//cache token
+	go func() {
+		_ = saveToken(tokenContent)
+	}()
 	resp.Code = tool.RespCodeSuccess
 	resp.Token = string(tokenContent)
 	tool.ResponseJSON(ctx, resp)
@@ -135,71 +158,19 @@ func codeLogin(ctx iris.Context) {
 		cols = append(cols, "Active")
 		_, err = signup.UpAccount(info, cols...)
 	}
-	resp.Code = tool.RespCodeSuccess
-	var provider token.JwtProvider
-	err = factory.Get(&provider)
+	tokenContent, err := getToken(info.Id, info.Code, req.LoginType)
 	if err != nil {
 		resp.Code = tool.RespCodeError
-		resp.Message = "token 服务异常"
+		resp.Message = "token获取失败"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	tokenPayload := token.JwtPayload{
-		Org:    "org_1",
-		Dept:   "dep_1",
-		Uid:    info.Code,
-		Client: req.CodeLoginType,
-	}
-	tokenContent, err := provider.Gen(tokenPayload)
-	if err != nil {
-		resp.Code = tool.RespCodeError
-		resp.Message = "token生成失败"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
+	//cache token
 	go func() {
 		_ = saveToken(tokenContent)
 	}()
-	resp.Token = string(tokenContent)
-	tool.ResponseJSON(ctx, resp)
-}
-
-func sendCode(ctx iris.Context) {
-	var resp app.Response
-	mail := ctx.URLParam("mail")
-	codeLoginType := ctx.URLParam("codeLoginType")
-	var value string
-	err := app.GetCache().Get(mail, &value)
-	if err != nil {
-		log.Info("获取缓存验证码失败%s：%s", mail, err)
-	}
-	//生成4位验证码
-	var code = common.RandCode(4)
-	log.Debug("code:%s", value)
-	if len(value) > 0 {
-		resp.Code = tool.RespCodeError
-		resp.Message = "验证码已发送,请稍后重试！"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-	switch codeLoginType {
-	case string(model.SmsNotifyType):
-		//todo
-	case string(model.MailNotifyType):
-		sendMail, err := notify.SighInSendMail(code, mail)
-		if err != nil || sendMail.Code != float64(tool.RespCodeSuccess) {
-			resp.Code = tool.RespCodeError
-			resp.Message = "验证码发送失败,请稍后重试！"
-			tool.ResponseJSON(ctx, resp)
-			return
-		}
-	}
-	//缓存验证码 3分钟过期 key=邮箱
-	err = app.GetCache().SetTTL(mail, code, time.Minute*3)
-	if err != nil {
-		log.Info("缓存验证码失败：%s", err)
-	}
 	resp.Code = tool.RespCodeSuccess
+	resp.Token = string(tokenContent)
 	tool.ResponseJSON(ctx, resp)
 }
 
@@ -232,29 +203,60 @@ func openLogin(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
+	tokenContent, err := getToken(account.Id, account.Code, req.LoginType)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		resp.Message = "token获取失败"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	//cache token
+	go func() {
+		_ = saveToken(tokenContent)
+	}()
 	resp.Code = tool.RespCodeSuccess
-	var provider token.JwtProvider
-	err = factory.Get(&provider)
-	if err != nil {
-		resp.Code = tool.RespCodeError
-		resp.Message = "token 服务异常"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-	tokenPayload := token.JwtPayload{
-		Org:    "org_1",
-		Dept:   "dep_1",
-		Uid:    account.Code,
-		Client: req.LoginType,
-	}
-	tokenContent, err := provider.Gen(tokenPayload)
-	if err != nil {
-		resp.Code = tool.RespCodeError
-		resp.Message = "token生成失败"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
 	resp.Token = string(tokenContent)
 	tool.ResponseJSON(ctx, resp)
 	return
+}
+
+func sendCode(ctx iris.Context) {
+	var resp app.Response
+	mail := ctx.URLParam("mail")
+	codeLoginType := ctx.URLParam("codeLoginType")
+	var value string
+	err := app.GetCache().Get(mail, &value)
+	if err != nil {
+		log.Info("获取缓存验证码失败%s：%s", mail, err)
+	}
+	//生成4位验证码
+	var code = common.RandCode(4)
+	log.Debug("code:%s", value)
+	if len(value) > 0 {
+		resp.Code = tool.RespCodeError
+		resp.Message = "验证码已发送,请稍后重试！"
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	switch codeLoginType {
+	case string(model.SmsNotifyType):
+		//todo
+		break
+	case string(model.MailNotifyType):
+		sendMail, err := notify.SighInSendMail(code, mail)
+		if err != nil || sendMail.Code != float64(tool.RespCodeSuccess) {
+			resp.Code = tool.RespCodeError
+			resp.Message = "验证码发送失败,请稍后重试！"
+			tool.ResponseJSON(ctx, resp)
+			return
+		}
+		break
+	}
+	//缓存验证码 3分钟过期 key=邮箱
+	err = app.GetCache().SetTTL(mail, code, time.Minute*3)
+	if err != nil {
+		log.Info("缓存验证码失败：%s", err)
+	}
+	resp.Code = tool.RespCodeSuccess
+	tool.ResponseJSON(ctx, resp)
 }

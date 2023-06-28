@@ -1,11 +1,11 @@
-FROM node:18.4.0 as ui
+FROM node:20 as ui
 ARG NAME
 ARG VERSION
 WORKDIR /ui_build
 ADD ui .
 RUN npm install && npm run build
 
-FROM golang:1.18 as build
+FROM golang:1.20 as build
 ARG NAME
 ARG VERSION
 ARG COMMIT

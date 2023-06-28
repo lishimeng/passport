@@ -13,6 +13,8 @@ import (
 	"github.com/lishimeng/passport/cmd/passport/ddd"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
+	"github.com/lishimeng/passport/static"
+	"net/http"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -46,9 +48,18 @@ func _main() (err error) {
 		if err != nil {
 			return err
 		}
-
-		etc.TokenTTL = time.Hour * 24 // TODO
-
+		//配置过期时间
+		switch etc.Config.Ttl.TimeType {
+		case "Hour":
+			etc.TokenTTL = time.Hour * time.Duration(etc.Config.Ttl.Time)
+			break
+		case "Minute":
+			etc.TokenTTL = time.Minute * time.Duration(etc.Config.Ttl.Time)
+			break
+		case "Second":
+			etc.TokenTTL = time.Second * time.Duration(etc.Config.Ttl.Time)
+			break
+		}
 		dbConfig := persistence.PostgresConfig{
 			UserName:  etc.Config.Db.User,
 			Password:  etc.Config.Db.Password,
@@ -87,11 +98,10 @@ func _main() (err error) {
 			//SetWebLogLevel("debug").
 			PrintVersion().
 			EnableCache(redisOpts, cacheOpts).
-			EnableWeb(etc.Config.Web.Listen, ddd.Route)
-		/*.
-		EnableStaticWeb(func() http.FileSystem {
-			return http.FS(static.Static)
-		})*/
+			EnableWeb(etc.Config.Web.Listen, ddd.Route).
+			EnableStaticWeb(func() http.FileSystem {
+				return http.FS(static.Static)
+			})
 		//ComponentBefore(setup.JobClearExpireTask).
 		//ComponentBefore(setup.BeforeStarted).
 		//ComponentAfter(setup.AfterStarted)
