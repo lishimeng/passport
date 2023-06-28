@@ -6,5 +6,6 @@ import "github.com/lishimeng/app-starter"
 type Tenant struct {
 	app.Pk
 	Name string `orm:"column(name);null"`
+	Code string `orm:"column(code);null"`
 	app.TableChangeInfo
 }
