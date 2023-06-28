@@ -157,6 +157,9 @@ func codeLogin(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
+	go func() {
+		_ = saveToken(tokenContent)
+	}()
 	resp.Token = string(tokenContent)
 	tool.ResponseJSON(ctx, resp)
 }
