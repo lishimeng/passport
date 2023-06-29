@@ -51,11 +51,14 @@ func GetSocialAccountByAccountId(id int) (info model.SocialAccount, err error) {
 	return
 }
 
-func GetSocialAccountById(socialAccountId, category string) (info model.SocialAccount, err error) {
+func GetSocialAccountById(socialAccountId, category string, uid int) (info model.SocialAccount, err error) {
 	cond := orm.NewCondition()
 	cond = cond.And("SocialAccountId", socialAccountId)
 	if len(category) > 0 {
 		cond = cond.And("Category", category)
+	}
+	if uid > 0 {
+		cond = cond.And("AccountId", uid)
 	}
 	err = app.GetOrm().Context.QueryTable(new(model.SocialAccount)).SetCond(cond).One(&info)
 	return

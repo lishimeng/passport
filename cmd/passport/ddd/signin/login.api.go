@@ -186,14 +186,14 @@ func openLogin(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	socialAccount, err := user.GetSocialAccountById(req.SocialAccountId, req.LoginType)
+	socialAccount, err := user.GetSocialAccountById(req.SocialAccountId, req.LoginType, 0)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "未绑定"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	account, err := user.GetUserInfoById(socialAccount.Id)
+	account, err := user.GetUserInfoById(socialAccount.AccountId)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "未查到记录"

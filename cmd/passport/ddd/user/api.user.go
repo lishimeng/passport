@@ -87,7 +87,7 @@ func BindUser(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	_, err = GetSocialAccountById(req.SocialAccountId, req.Category)
+	_, err = GetSocialAccountById(req.SocialAccountId, req.Category, account.Id)
 	if err == nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = req.SocialAccountId + "已绑定"
