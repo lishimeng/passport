@@ -3,6 +3,7 @@ package notify
 import (
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/owl-messager/sdk"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
@@ -13,6 +14,7 @@ func SighInSendSms(code string, to string) (resp sdk.Response, err error) {
 	client := sdk.NewClient(etc.Config.Notify.Host)
 	template, err := GetSighInSmsTemplate()
 	if err != nil {
+		log.Info(err)
 		return
 	}
 	params := make(map[string]string)
@@ -24,6 +26,7 @@ func SighInSendSms(code string, to string) (resp sdk.Response, err error) {
 	}
 	resp, err = client.SendSms(req)
 	if err != nil {
+		log.Info(err)
 		return
 	}
 	return

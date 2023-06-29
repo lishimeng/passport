@@ -95,7 +95,7 @@ func _main() (err error) {
 		}
 		builder.EnableDatabase(dbConfig.Build(),
 			model.Tables()...).
-			//SetWebLogLevel("debug").
+			SetWebLogLevel("debug").
 			PrintVersion().
 			EnableCache(redisOpts, cacheOpts).
 			EnableWeb(etc.Config.Web.Listen, ddd.Route).
