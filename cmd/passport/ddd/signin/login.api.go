@@ -186,7 +186,7 @@ func openLogin(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	socialAccount, err := user.GetSocialAccountById(req.SocialAccountId)
+	socialAccount, err := user.GetSocialAccountById(req.SocialAccountId, req.LoginType)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "未绑定"

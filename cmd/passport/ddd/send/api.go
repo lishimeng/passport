@@ -20,15 +20,16 @@ func GetSendCode(ctx iris.Context) {
 	if err != nil {
 		log.Info("获取缓存验证码失败%s：%s", receiver, err)
 	}
-	//生成4位验证码
-	var code = common.RandCode(4)
-	log.Debug("code:%s", code)
 	if len(value) > 0 {
+		log.Debug("缓存Code:%s,%s", receiver, value)
 		resp.Code = tool.RespCodeError
 		resp.Message = "验证码已发送,请稍后重试！"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
+	//生成4位验证码
+	var code = common.RandCode(4)
+	log.Debug("code:%s", code)
 	switch codeLoginType {
 	case string(model.SmsNotifyType):
 		log.Info("发送短信：%s", receiver)
@@ -50,6 +51,11 @@ func GetSendCode(ctx iris.Context) {
 			return
 		}
 		break
+	default:
+		resp.Code = tool.RespCodeError
+		resp.Message = "验证码未发送,请稍后重试！"
+		tool.ResponseJSON(ctx, resp)
+		return
 	}
 	//缓存验证码 3分钟过期 key=邮箱
 	err = app.GetCache().SetTTL(receiver, code, time.Minute)

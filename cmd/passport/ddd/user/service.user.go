@@ -46,8 +46,18 @@ func InsertSocialAccount(socialAccount model.SocialAccount) (info model.SocialAc
 	return
 }
 
-func GetSocialAccountById(socialAccountId string) (info model.SocialAccount, err error) {
-	err = app.GetOrm().Context.QueryTable(new(model.SocialAccount)).Filter("SocialAccountId", socialAccountId).One(&info)
+func GetSocialAccountByAccountId(id int) (info model.SocialAccount, err error) {
+	err = app.GetOrm().Context.QueryTable(new(model.SocialAccount)).Filter("AccountId", id).One(&info)
+	return
+}
+
+func GetSocialAccountById(socialAccountId, category string) (info model.SocialAccount, err error) {
+	cond := orm.NewCondition()
+	cond = cond.And("SocialAccountId", socialAccountId)
+	if len(category) > 0 {
+		cond = cond.And("Category", category)
+	}
+	err = app.GetOrm().Context.QueryTable(new(model.SocialAccount)).SetCond(cond).One(&info)
 	return
 }
 
