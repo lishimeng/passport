@@ -44,6 +44,7 @@ import {useRoute, useRouter} from "vue-router";
 import {formatAxis} from "/@/utils/formatTime";
 import {useI18n} from "vue-i18n";
 import Cookies from "js-cookie";
+import {sendCodeApi} from "/@/api/send";
 const storesThemeConfig = useThemeConfig();
 const { themeConfig } = storeToRefs(storesThemeConfig);
 const route = useRoute();
@@ -95,6 +96,13 @@ const login = () => {
     }
   })
 }
+const checkPhone = (val: any) => {
+  const regPhone = /^1[3456789]\d{9}$/
+  if (regPhone.test(val)) {
+    return true;
+  }
+  return false;
+}
 // 时间获取
 const currentTime = computed(() => {
   return formatAxis(new Date());
@@ -134,11 +142,37 @@ const signInSuccess = async () => {
   }
   state.loading.signIn = false;
 }
-
+const authCode = async () => {
+  // state.authCode=(Math.round(Math.random()*(9999-1000)+1000)).toString()
+  // console.log(state.authCode)
+  await sendCodeApi({
+    // code:state.authCode,
+    codeLoginType: "sms",
+    receiver: state.ruleForm.userName
+  }).then(res => {
+    if (res && res.code == 200) {
+      ElMessage.success("邮件发送成功，请注意查收！")
+    } else {
+      ElMessage.error("邮件发送失败！")
+      state.showCode = true
+      state.codeText = "获取验证码";
+      clearInterval(state.setIntervalTime);
+    }
+  })
+}
 const sendCode = () => {
+  if (!state.ruleForm.userName) {
+    ElMessage.error("手机号不能为空！")
+    return
+  }
+  if (!checkPhone(state.ruleForm.userName)) {
+    ElMessage.error("请输入正确的手机号！")
+    return
+  }
   state.showCode=false
   state.codeTimeNum = 60
   state.setIntervalTime = setInterval(countDown, 1000)
+  authCode()
 }
 const countDown= () => {
   // console.log(state.codeTimeNum)

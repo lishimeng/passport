@@ -9,11 +9,8 @@ import (
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/cmd/passport/ddd/signup"
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
-	"github.com/lishimeng/passport/internal/common"
 	"github.com/lishimeng/passport/internal/db/model"
-	"github.com/lishimeng/passport/internal/notify"
 	"github.com/lishimeng/passport/internal/passwd"
-	"time"
 )
 
 type LoginReq struct {
@@ -218,45 +215,4 @@ func openLogin(ctx iris.Context) {
 	resp.Token = string(tokenContent)
 	tool.ResponseJSON(ctx, resp)
 	return
-}
-
-func sendCode(ctx iris.Context) {
-	var resp app.Response
-	mail := ctx.URLParam("mail")
-	codeLoginType := ctx.URLParam("codeLoginType")
-	var value string
-	err := app.GetCache().Get(mail, &value)
-	if err != nil {
-		log.Info("获取缓存验证码失败%s：%s", mail, err)
-	}
-	//生成4位验证码
-	var code = common.RandCode(4)
-	log.Debug("code:%s", value)
-	if len(value) > 0 {
-		resp.Code = tool.RespCodeError
-		resp.Message = "验证码已发送,请稍后重试！"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-	switch codeLoginType {
-	case string(model.SmsNotifyType):
-		//todo
-		break
-	case string(model.MailNotifyType):
-		sendMail, err := notify.SighInSendMail(code, mail)
-		if err != nil || sendMail.Code != float64(tool.RespCodeSuccess) {
-			resp.Code = tool.RespCodeError
-			resp.Message = "验证码发送失败,请稍后重试！"
-			tool.ResponseJSON(ctx, resp)
-			return
-		}
-		break
-	}
-	//缓存验证码 3分钟过期 key=邮箱
-	err = app.GetCache().SetTTL(mail, code, time.Minute*3)
-	if err != nil {
-		log.Info("缓存验证码失败：%s", err)
-	}
-	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
 }
