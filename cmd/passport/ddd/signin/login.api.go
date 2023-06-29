@@ -118,7 +118,8 @@ func codeLogin(ctx iris.Context) {
 		return
 	}
 	var value string
-	err = app.GetCache().Get(req.UserName, &value)
+	key := "sign_in_" + req.UserName
+	err = app.GetCache().Get(key, &value)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "请先获取验证码"
