@@ -7,7 +7,6 @@ import (
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
-	"github.com/lishimeng/passport/cmd/passport/ddd/signup"
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/passwd"
@@ -117,22 +116,6 @@ func codeLogin(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	var value string
-	key := "sign_in_" + req.UserName
-	err = app.GetCache().Get(key, &value)
-	if err != nil {
-		resp.Code = tool.RespCodeError
-		resp.Message = "请先获取验证码"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
-	log.Info("code:%s,%s", value, req.Code)
-	if value != req.Code {
-		resp.Code = tool.RespCodeError
-		resp.Message = "验证码不正确"
-		tool.ResponseJSON(ctx, resp)
-		return
-	}
 	info, err := user.GetUserInfoByUserName(req.UserName)
 	if err != nil {
 		resp.Code = tool.RespCodeError
@@ -142,19 +125,55 @@ func codeLogin(ctx iris.Context) {
 	}
 	//验证码匹配激活邮箱或手机
 	var cols []string
+	var value string
 	switch req.CodeLoginType {
 	case string(model.SmsNotifyType):
+		key := string(model.SmsSighIn) + req.UserName
+		err = app.GetCache().Get(key, &value)
+		if err != nil {
+			resp.Code = tool.RespCodeError
+			resp.Message = "请先获取验证码"
+			tool.ResponseJSON(ctx, resp)
+			return
+		}
+		log.Info("code:%s,%s", value, req.Code)
+		if value != req.Code {
+			resp.Code = tool.RespCodeError
+			resp.Message = "验证码不正确"
+			tool.ResponseJSON(ctx, resp)
+			return
+		}
 		info.MobileVerified = model.ActivateEnable
 		cols = append(cols, "MobileVerified")
 		info.Active = model.ActivateEnable
 		cols = append(cols, "Active")
-		_, err = signup.UpAccount(info, cols...)
+		_, err = user.UpAccount(info, cols...)
 	case string(model.MailNotifyType):
+		key := string(model.EmailSighIn) + req.UserName
+		err = app.GetCache().Get(key, &value)
+		if err != nil {
+			resp.Code = tool.RespCodeError
+			resp.Message = "请先获取验证码"
+			tool.ResponseJSON(ctx, resp)
+			return
+		}
+		log.Info("code:%s,%s", value, req.Code)
+		if value != req.Code {
+			resp.Code = tool.RespCodeError
+			resp.Message = "验证码不正确"
+			tool.ResponseJSON(ctx, resp)
+			return
+		}
 		info.EmailVerified = model.ActivateEnable
 		cols = append(cols, "EmailVerified")
 		info.Active = model.ActivateEnable
 		cols = append(cols, "Active")
-		_, err = signup.UpAccount(info, cols...)
+		_, err = user.UpAccount(info, cols...)
+	default:
+		resp.Code = tool.RespCodeError
+		resp.Message = "未匹配到登录平台"
+		tool.ResponseJSON(ctx, resp)
+		return
 	}
 	tokenContent, err := getToken(info.Id, info.Code, req.LoginType)
 	if err != nil {

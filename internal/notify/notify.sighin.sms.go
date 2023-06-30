@@ -36,7 +36,7 @@ func GetSighInSmsTemplate() (info model.Notify, err error) {
 	var qs = app.GetOrm().Context.QueryTable(new(model.Notify))
 	cond := orm.NewCondition()
 	cond = cond.And("Status__exact", 1)
-	cond = cond.And("Category__exact", model.SmsSighup)
+	cond = cond.And("Category__exact", model.SmsSighIn)
 	err = qs.SetCond(cond).One(&info)
 	return
 }

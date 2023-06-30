@@ -86,7 +86,7 @@ const login = () => {
       Session.set('token', res.token);
       //外部登录
       if(route.query.redirect_uri){
-        window.location.href = route.query.redirect_uri;
+        window.location.href = route.query.redirect_uri+"?token="+res.token;
       }else{
         signInSuccess()
       }

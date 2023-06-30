@@ -24,9 +24,3 @@ func RegisterAccount(mobile, email, password, name string) (info model.Account, 
 	_, err = app.GetOrm().Context.Insert(&info)
 	return
 }
-
-func UpAccount(ori model.Account, cols ...string) (info model.Account, err error) {
-	_, err = app.GetOrm().Context.Update(&ori, cols...)
-	info = ori
-	return
-}

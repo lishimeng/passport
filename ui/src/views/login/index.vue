@@ -54,6 +54,7 @@ import { NextLoading } from '/@/utils/loading';
 import logoMini from '/@/assets/logo-mini.svg';
 import loginMain from '/@/assets/login-main.svg';
 import loginBg from '/@/assets/login-bg.svg';
+import {checkSignInApi} from "/@/api/login";
 
 // 引入组件
 const Account = defineAsyncComponent(() => import('/@/views/login/component/account.vue'));
@@ -77,6 +78,9 @@ const getThemeConfig = computed(() => {
 // 页面加载时
 onMounted(() => {
 	NextLoading.done();
+  checkSignInApi().then(res=>{
+     console.log(res)
+  })
 });
 </script>
 

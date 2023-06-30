@@ -73,3 +73,9 @@ func GetTenantAccountByUid(uid int) (info model.TenantAccount, err error) {
 	err = app.GetOrm().Context.QueryTable(new(model.TenantAccount)).Filter("Uid", uid).One(&info)
 	return
 }
+
+func UpAccount(ori model.Account, cols ...string) (info model.Account, err error) {
+	_, err = app.GetOrm().Context.Update(&ori, cols...)
+	info = ori
+	return
+}
