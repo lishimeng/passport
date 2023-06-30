@@ -143,7 +143,7 @@ func register(ctx iris.Context) {
 	}
 	p := passwd.Generate(req.Password, account)
 	account.Password = p
-	_, err = UpAccount(account, "password")
+	_, err = user.UpAccount(account, "password")
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "更新密码失败"

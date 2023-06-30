@@ -7,5 +7,7 @@ import (
 
 func Route(root iris.Party) {
 	root.Get("/getUserInfo", midware.WithAuth(GetUserInfo)...)
-	root.Post("/bindUser", midware.WithAuth(BindUser)...) //第三方关联绑定用户
+	root.Post("/bindUser", midware.WithAuth(BindUser)...)   //第三方关联绑定用户
+	root.Post("/bindPhone", midware.WithAuth(BindPhone)...) //换绑手机
+	root.Post("/bindEmail", midware.WithAuth(BindEmail)...) //换绑邮箱
 }
