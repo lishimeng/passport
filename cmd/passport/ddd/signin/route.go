@@ -10,4 +10,5 @@ func Route(root iris.Party) {
 	root.Post("/codeLogin", codeLogin)
 	root.Post("/socialLogin", openLogin)
 	root.Post("/checkToken", midware.WithAuth(checkToken)...)
+	root.Post("/clearToken", midware.WithAuth(clearToken)...)
 }

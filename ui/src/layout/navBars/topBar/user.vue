@@ -79,6 +79,7 @@ import { useThemeConfig } from '/@/stores/themeConfig';
 import other from '/@/utils/other';
 import mittBus from '/@/utils/mitt';
 import { Session, Local } from '/@/utils/storage';
+import {clearTokenApi} from "/@/api/login";
 
 // 引入组件
 const UserNews = defineAsyncComponent(() => import('/@/layout/navBars/topBar/userNews.vue'));
@@ -146,10 +147,16 @@ const onHandleCommandClick = (path: string) => {
 			},
 		})
 			.then(async () => {
-				// 清除缓存/token等
-				Session.clear();
-				// 使用 reload 时，不需要调用 resetRoute() 重置路由
-				window.location.reload();
+        clearTokenApi({}).then(res=>{
+          console.log("清理缓存",res)
+          if(res&&res.code==200){
+            // // 清除缓存/token等
+            Session.clear();
+            Local.clear();
+            // // 使用 reload 时，不需要调用 resetRoute() 重置路由
+            window.location.reload();
+          }
+        })
 			})
 			.catch(() => {});
 	} else if (path === 'wareHouse') {
