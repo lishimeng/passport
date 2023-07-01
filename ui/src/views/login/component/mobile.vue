@@ -85,8 +85,10 @@ const login = () => {
       Local.set('token', res.token);
       Session.set('token', res.token);
       //外部登录
-      if(route.query.redirect_uri){
-        window.location.href = route.query.redirect_uri+"?token="+res.token;
+      var referrer=document.referrer
+      var localHref=window.location.href
+      if(referrer&&localHref.indexOf(referrer)<0){
+        window.location.replace(document.referrer+"#/"+"?token="+res.token)
       }else{
         signInSuccess()
       }

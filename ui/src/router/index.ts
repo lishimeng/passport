@@ -102,7 +102,14 @@ router.beforeEach(async (to, from, next) => {
     NProgress.configure({showSpinner: false});
     if (to.meta.title) NProgress.start();
     const token = Session.get('token');
-    console.log("token:", token, to.path)
+    console.log("token:", token, to.path,document.referrer)
+    var referrer=document.referrer
+    var localHref=window.location.href
+    console.log(referrer,localHref,localHref.indexOf(referrer))
+    if(localHref.indexOf(referrer)<0){
+        console.log("跳转："+referrer+"#/"+"?token="+Local.get("token"))
+        window.location.replace(referrer+"#/"+"?token="+Local.get("token"))
+    }
     if ((to.path === '/login' || to.path === '/register') && !token) {
         next();
         NProgress.done();
@@ -112,7 +119,7 @@ router.beforeEach(async (to, from, next) => {
             Session.clear();
             NProgress.done();
         } else if (token && to.path === '/login') {
-            next('/login');
+            next('/home');
             NProgress.done();
         } else {
             const storesRoutesList = useRoutesList(pinia);
