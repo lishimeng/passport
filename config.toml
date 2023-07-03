@@ -20,7 +20,9 @@ key = "1234asdfrtyuedcvtainch@r&y%ttghu"
 enable = true
 
 [notify]
-host = "https://notify.thingplecloud.com/api"
+host = "http://localhost:81/"
+appKey= "aewfvsfvadv"
+secret= "bhnsasdvdzvdvs"
 
 [ttl]
 time = 24
