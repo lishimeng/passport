@@ -60,7 +60,6 @@ import {reactive, computed, onMounted} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n';
-import Cookies from 'js-cookie';
 import { storeToRefs } from 'pinia';
 import { useThemeConfig } from '/@/stores/themeConfig';
 import { initFrontEndControlRoutes } from '/@/router/frontEnd';
@@ -132,8 +131,9 @@ const onSignIn = async () => {
       //外部登录
       var referrer=document.referrer
       var localHref=window.location.href
+      var openUrl=referrer +"#/"+ "?token=" + res.token
       if(referrer&&localHref.indexOf(referrer)<0){
-        window.location.replace(document.referrer+"?token="+res.token)
+        window.location.replace(openUrl)
       }else{
         signInSuccess()
       }

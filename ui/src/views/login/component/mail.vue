@@ -43,7 +43,6 @@ import {computed, reactive} from "vue";
 import {ElMessage} from "element-plus";
 import {signInCodeApi} from "/@/api/login";
 import {Local, Session} from "/@/utils/storage";
-import Cookies from "js-cookie";
 import {formatAxis} from "/@/utils/formatTime";
 import {initFrontEndControlRoutes} from "/@/router/frontEnd";
 import {initBackEndControlRoutes} from "/@/router/backEnd";
@@ -100,9 +99,10 @@ const login = () => {
       //外部登录
       var referrer=document.referrer
       var localHref=window.location.href
+      var openUrl=referrer +"#/"+ "?token=" + res.token
       if(referrer&&localHref.indexOf(referrer)<0){
-        window.location.replace(document.referrer+"?token="+res.token)
-      } else {
+        window.location.replace(openUrl)
+      }else {
         signInSuccess()
       }
     } else {

@@ -166,6 +166,14 @@ export const staticRoutes: Array<RouteRecordRaw> = [
 			title: '登录',
 		},
 	},
+	{
+		path: '/logout',
+		name: 'logout',
+		component: () => import('/@/views/login/loginout.vue'),
+		meta: {
+			title: '退出登录',
+		},
+	},
 /*	{
 		path: '/register',
 		name: 'register',

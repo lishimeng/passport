@@ -102,42 +102,52 @@ router.beforeEach(async (to, from, next) => {
     NProgress.configure({showSpinner: false});
     if (to.meta.title) NProgress.start();
     const token = Session.get('token');
-    console.log("token:", token, to.path,document.referrer)
-    var referrer=document.referrer
-    var localHref=window.location.href
-    console.log(referrer,localHref,localHref.indexOf(referrer))
-    if(localHref.indexOf(referrer)<0){
-        console.log("跳转："+referrer+"#/"+"?token="+Local.get("token"))
-        window.location.replace(referrer+"#/"+"?token="+Local.get("token"))
-    }
-    if ((to.path === '/login' || to.path === '/register') && !token) {
+    // console.log("token:", token, to.path, document.referrer)
+    if ((to.path === '/login' || to.path === '/register' || to.path === '/logout') && !token) {
         next();
         NProgress.done();
     } else {
+        var referrer = document.referrer
+        var localHref = window.location.href
+        // console.log(referrer, localHref, localHref.indexOf(referrer))
+        var openUrl=referrer +"#/"+ "?token=" + Local.get("token")
         if (!token) {
             next(`/login?redirect=${to.path}&params=${JSON.stringify(to.query ? to.query : to.params)}`);
             Session.clear();
             NProgress.done();
         } else if (token && to.path === '/login') {
-            next('/home');
+            if (localHref.indexOf(referrer) < 0) {
+                // console.log("跳转：" + openUrl)
+                window.location.replace(openUrl)
+            } else {
+                next('/home');
+                NProgress.done();
+            }
+        }else if(token && to.path === '/logout'){
+            next();
             NProgress.done();
         } else {
-            const storesRoutesList = useRoutesList(pinia);
-            const {routesList} = storeToRefs(storesRoutesList);
-            if (routesList.value.length === 0) {
-                if (isRequestRoutes) {
-                    // 后端控制路由：路由数据初始化，防止刷新时丢失
-                    await initBackEndControlRoutes();
-                    // 解决刷新时，一直跳 404 页面问题，关联问题 No match found for location with path 'xxx'
-                    // to.query 防止页面刷新时，普通路由带参数时，参数丢失。动态路由（xxx/:id/:name"）isDynamic 无需处理
-                    next({path: to.path, query: to.query});
-                } else {
-                    // https://gitee.com/lyt-top/vue-next-admin/issues/I5F1HP
-                    await initFrontEndControlRoutes();
-                    next({path: to.path, query: to.query});
-                }
+            if (localHref.indexOf(referrer) < 0) {
+                // console.log("跳转：" + openUrl)
+                window.location.replace(openUrl)
             } else {
-                next();
+                const storesRoutesList = useRoutesList(pinia);
+                const {routesList} = storeToRefs(storesRoutesList);
+                if (routesList.value.length === 0) {
+                    if (isRequestRoutes) {
+                        // 后端控制路由：路由数据初始化，防止刷新时丢失
+                        await initBackEndControlRoutes();
+                        // 解决刷新时，一直跳 404 页面问题，关联问题 No match found for location with path 'xxx'
+                        // to.query 防止页面刷新时，普通路由带参数时，参数丢失。动态路由（xxx/:id/:name"）isDynamic 无需处理
+                        next({path: to.path, query: to.query});
+                    } else {
+                        // https://gitee.com/lyt-top/vue-next-admin/issues/I5F1HP
+                        await initFrontEndControlRoutes();
+                        next({path: to.path, query: to.query});
+                    }
+                } else {
+                    next();
+                }
             }
         }
     }
