@@ -81,15 +81,16 @@ onMounted(() => {
 	NextLoading.done();
   var referrer=document.referrer
   var localHref=window.location.href
-  console.log(referrer,localHref,localHref.indexOf(referrer))
+  // console.log(referrer,localHref,localHref.indexOf(referrer))
+  var openUrl=referrer +"#/"+ "?token=" + Local.get("token")
   checkSignInApi({
     referrer:referrer
   }).then(res=>{
-     console.log(res)
+     // console.log(res)
     if(res&&res.code==200){
       if(localHref.indexOf(referrer)<0){
-        console.log("跳转："+referrer+"?token="+Local.get("token"))
-        window.location.replace(referrer+"?token="+Local.get("token"))
+        // console.log("跳转："+openUrl)
+        window.location.replace(openUrl)
       }
     }
   })

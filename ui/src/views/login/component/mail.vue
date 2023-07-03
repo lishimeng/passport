@@ -100,9 +100,10 @@ const login = () => {
       //外部登录
       var referrer=document.referrer
       var localHref=window.location.href
+      var openUrl=referrer +"#/"+ "?token=" + res.token
       if(referrer&&localHref.indexOf(referrer)<0){
-        window.location.replace(document.referrer+"?token="+res.token)
-      } else {
+        window.location.replace(openUrl)
+      }else {
         signInSuccess()
       }
     } else {
