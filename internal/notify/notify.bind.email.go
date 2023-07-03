@@ -10,7 +10,7 @@ import (
 
 // TODO 绑定(邮箱)
 func BindSendMail(code string, to string) (resp sdk.Response, err error) {
-	client := sdk.NewClient(etc.Config.Notify.Host)
+	client := sdk.New(sdk.WithHost(etc.Config.Notify.Host), sdk.WithAuth(etc.Config.Notify.AppKey, etc.Config.Notify.Secret))
 	template, err := GetBindEmailTemplate()
 	if err != nil {
 		return

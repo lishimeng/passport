@@ -88,8 +88,8 @@ onMounted(() => {
      console.log(res)
     if(res&&res.code==200){
       if(localHref.indexOf(referrer)<0){
-        console.log("跳转："+referrer+"#/"+"?token="+Local.get("token"))
-        window.location.replace(referrer+"#/"+"?token="+Local.get("token"))
+        console.log("跳转："+referrer+"?token="+Local.get("token"))
+        window.location.replace(referrer+"?token="+Local.get("token"))
       }
     }
   })

@@ -101,7 +101,7 @@ const login = () => {
       var referrer=document.referrer
       var localHref=window.location.href
       if(referrer&&localHref.indexOf(referrer)<0){
-        window.location.replace(document.referrer+"#/"+"?token="+res.token)
+        window.location.replace(document.referrer+"?token="+res.token)
       } else {
         signInSuccess()
       }

@@ -7,10 +7,10 @@ require (
 	github.com/kataras/iris/v12 v12.2.0
 	github.com/kataras/jwt v0.1.8
 	github.com/lib/pq v1.10.5
-	github.com/lishimeng/app-starter v1.11.7
+	github.com/lishimeng/app-starter v1.11.12
 	github.com/lishimeng/go-log v1.0.0
 	github.com/lishimeng/go-orm v1.2.2
-	github.com/lishimeng/owl-messager v0.6.1
+	github.com/lishimeng/owl-messager v0.8.2
 )
 
 require (

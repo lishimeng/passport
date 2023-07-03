@@ -35,7 +35,9 @@ type token struct {
 }
 
 type notify struct {
-	Host string
+	Host   string
+	AppKey string
+	Secret string
 }
 
 type ttl struct {
