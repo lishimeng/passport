@@ -149,13 +149,11 @@ const onHandleCommandClick = (path: string) => {
 			.then(async () => {
         clearTokenApi({}).then(res=>{
           console.log("清理缓存",res)
-          if(res&&res.code==200){
-            // // 清除缓存/token等
-            Session.clear();
-            Local.clear();
-            // // 使用 reload 时，不需要调用 resetRoute() 重置路由
-            window.location.reload();
-          }
+          // // 清除缓存/token等
+          Session.clear();
+          Local.clear();
+          // // 使用 reload 时，不需要调用 resetRoute() 重置路由
+          window.location.reload();
         })
 			})
 			.catch(() => {});
