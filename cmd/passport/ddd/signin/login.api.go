@@ -148,6 +148,8 @@ func codeLogin(ctx iris.Context) {
 		info.Active = model.ActivateEnable
 		cols = append(cols, "Active")
 		_, err = user.UpAccount(info, cols...)
+		//登录成功时清除验证码缓存
+		app.GetCache().Set(key, "")
 	case string(model.MailNotifyType):
 		key := string(model.EmailSighIn) + req.UserName
 		err = app.GetCache().Get(key, &value)
@@ -169,6 +171,8 @@ func codeLogin(ctx iris.Context) {
 		info.Active = model.ActivateEnable
 		cols = append(cols, "Active")
 		_, err = user.UpAccount(info, cols...)
+		//登录成功时清除验证码缓存
+		app.GetCache().Set(key, "")
 	default:
 		resp.Code = tool.RespCodeError
 		resp.Message = "未匹配到登录平台"
