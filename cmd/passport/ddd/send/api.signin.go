@@ -32,11 +32,12 @@ func signInSendCodeGet(ctx iris.Context) {
 	}
 	//生成4位验证码
 	var code = common.RandCode(4)
+	var value string
 	switch codeLoginType {
 	case string(model.SmsNotifyType):
 		key := string(model.SmsSighIn) + receiver
-		exist := app.GetCache().Exists(key)
-		if exist {
+		err = app.GetCache().Get(key, &value)
+		if err == nil && len(value) > 0 {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
@@ -59,8 +60,8 @@ func signInSendCodeGet(ctx iris.Context) {
 		break
 	case string(model.MailNotifyType):
 		key := string(model.EmailSighIn) + receiver
-		exist := app.GetCache().Exists(key)
-		if exist {
+		err = app.GetCache().Get(key, &value)
+		if err == nil && len(value) > 0 {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
