@@ -4,6 +4,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/go-log"
 )
 
 type CreateAccountReq struct {
@@ -53,10 +54,58 @@ func create(ctx iris.Context) {
 	tool.ResponseJSON(ctx, resp)
 }
 
+type PasswordReq struct {
+	Id       int    `json:"id,omitempty"`
+	Password string `json:"password,omitempty"`
+}
+
+type PasswordResp struct {
+	app.Response
+}
+
 func changePasswd(ctx iris.Context) {
+
+	var err error
+	var req PasswordReq
+	var resp PasswordResp
+
+	err = ctx.ReadJSON(&req)
+	if err != nil {
+		resp.Code = tool.RespCodeError
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+}
+
+func remove(_ iris.Context) {
 
 }
 
-func remove(ctx iris.Context) {
+type GetInfoResp struct {
+	app.Response
+	AccountCode string
+	Mobile      string
+	Email       string
+}
 
+func info(ctx iris.Context) {
+	var err error
+	var resp GetInfoResp
+	code := ctx.Params().Get("code")
+
+	user, err := getAccountSvc(code)
+	if err != nil {
+		log.Debug(err)
+		resp.Code = tool.RespCodeNotFound
+		resp.Message = tool.RespMsgNotFount
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+
+	resp.Code = tool.RespCodeSuccess
+	resp.AccountCode = user.Code
+	resp.Email = user.Email
+	resp.Mobile = user.Mobile
+
+	tool.ResponseJSON(ctx, resp)
 }

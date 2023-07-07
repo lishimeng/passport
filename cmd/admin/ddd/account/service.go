@@ -28,3 +28,10 @@ func createAccountSvc(name, phone, email string) (user model.Account, err error)
 	})
 	return
 }
+
+func getAccountSvc(code string) (user model.Account, err error) {
+	err = app.GetOrm().Context.
+		QueryTable(new(model.Account)).
+		Filter("Code", code).One(&user)
+	return
+}

@@ -7,6 +7,7 @@ import (
 
 func Route(root iris.Party) {
 
+	root.Get("/{code:string}", midware.WithAuth(info)...)
 	root.Post("/", midware.WithAuth(create)...)
 	root.Delete("/", midware.WithAuth(remove)...)
 	root.Post("/{id:int}/password", midware.WithAuth(changePasswd)...)
