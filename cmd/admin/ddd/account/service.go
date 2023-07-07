@@ -18,7 +18,7 @@ func createAccountSvc(name, phone, email string) (user model.Account, err error)
 		if len(email) > 0 {
 			user.Name = email
 		}
-		user.Code = tool.GetUUIDString()
+		user.Code = tool.UUIDString()
 		// TODO
 		_, e := ctx.Context.Insert(&user)
 		if e != nil {
