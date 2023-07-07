@@ -11,9 +11,9 @@ import (
 	"github.com/lishimeng/go-log"
 	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/passport/cmd/passport/ddd"
+	"github.com/lishimeng/passport/cmd/passport/static"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
-	"github.com/lishimeng/passport/static"
 	"net/http"
 	"time"
 )
@@ -75,7 +75,7 @@ func _main() (err error) {
 			issuer := etc.Config.Token.Issuer
 			tokenKey := []byte(etc.Config.Token.Key)
 			builder = builder.EnableTokenValidator(func(inject app.TokenValidatorInjectFunc) {
-				provider := token.NewJwtProvider(issuer,
+				provider := token.NewJwtProvider(token.WithIssuer(issuer),
 					token.WithKey(tokenKey, tokenKey), // hs256的秘钥必须是[]byte
 					token.WithAlg("HS256"),
 					token.WithDefaultTTL(etc.TokenTTL),
