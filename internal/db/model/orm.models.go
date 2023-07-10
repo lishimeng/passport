@@ -8,6 +8,7 @@ func Tables() (t []interface{}) {
 		new(TenantAccount),
 		new(SocialAccount),
 		new(Notify),
+		new(ThemeConfig),
 	)
 	return
 }

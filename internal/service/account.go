@@ -8,12 +8,12 @@ import (
 )
 
 func GenAccountCode() (code string) {
-	code = tool.GetUUIDString()
+	code = tool.UUIDString()
 	return
 }
 
 func GenTenantCode() (code string) {
-	code = tool.GetUUIDString()
+	code = tool.UUIDString()
 	return
 }
 
@@ -24,7 +24,7 @@ func ResetPassword(id int, newPasswd ...string) (uid int, code string, password 
 	if len(newPasswd) > 0 {
 		psw = newPasswd[0]
 	} else {
-		psw = tool.GetRandStr(12) // random password
+		psw = tool.RandStr(12) // random password
 	}
 	err = app.GetOrm().Transaction(func(ctx persistence.TxContext) error {
 		user := model.Account{}
