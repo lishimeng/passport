@@ -5,7 +5,11 @@ package theme
 
 import (
 	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/tool"
+	"github.com/lishimeng/go-log"
+	"github.com/lishimeng/passport/internal/db/model"
+	"strconv"
 )
 
 type IndexData struct {
@@ -41,10 +45,45 @@ type Footer struct {
 	CopyRight  string `json:"copyRight,omitempty"`
 }
 
-func themeConfig(ctx iris.Context) {
-	var resp IndexData
+type configResp struct {
+	app.Response
+	Data interface{} `json:"data,omitempty"`
+}
 
-	// TODO 从db获取配置, 如没有值设置"", 确保response中没有值
-	// TODO ui 根据response替换相应属性, 没有值的属性继续使用默认值
+func themeConfig(ctx iris.Context) {
+	var resp configResp
+	configPage := ctx.URLParamDefault("configPage", "")
+	log.Info("configPage:%s", configPage)
+	var themeConfigs []model.ThemeConfig
+	qs := app.GetOrm().Context.QueryTable(new(model.ThemeConfig))
+	if len(configPage) > 0 {
+		_, err := qs.Filter("ConfigPage", configPage).All(&themeConfigs)
+		if err != nil {
+			log.Info("query fail : %s", err)
+		}
+	} else {
+		_, err := qs.All(&themeConfigs)
+		if err != nil {
+			log.Info("query fail : %s", err)
+		}
+	}
+	config := make(map[string]interface{})
+	if len(themeConfigs) > 0 {
+		for _, item := range themeConfigs {
+			switch item.ConfigContentType {
+			case string(model.NumberConfigContentType):
+				config[item.ConfigName], _ = strconv.Atoi(item.ConfigContent)
+				break
+			case string(model.BooleanConfigContentType):
+				config[item.ConfigName], _ = strconv.ParseBool(item.ConfigContent)
+				break
+			default:
+				config[item.ConfigName] = item.ConfigContent
+				break
+			}
+		}
+	}
+	resp.Data = config
+	resp.Code = tool.RespCodeSuccess
 	tool.ResponseJSON(ctx, resp)
 }

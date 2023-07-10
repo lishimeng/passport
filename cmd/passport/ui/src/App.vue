@@ -16,6 +16,7 @@ import other from '/@/utils/other';
 import { Local, Session } from '/@/utils/storage';
 import mittBus from '/@/utils/mitt';
 import setIntroduction from '/@/utils/setIconfont';
+import {getThemeConfigApi} from "/@/api/themeconfig";
 
 // 引入组件
 const Setings = defineAsyncComponent(() => import('/@/layout/navBars/topBar/setings.vue'));
@@ -52,15 +53,17 @@ onBeforeMount(() => {
 // 页面加载时
 onMounted(() => {
 	nextTick(() => {
+    getThemeConfig()
 		// 监听布局配'置弹窗点击打开
 		mittBus.on('openSetingsDrawer', () => {
 			setingsRef.value.openDrawer();
 		});
 		// 获取缓存中的布局配置
-		if (Local.get('themeConfig')) {
+/*		if (Local.get('themeConfig')) {
+      console.log("local1:",Local.get('themeConfig'))
 			storesThemeConfig.setThemeConfig({ themeConfig: Local.get('themeConfig') });
 			document.documentElement.style.cssText = Local.get('themeConfigStyle');
-		}
+		}*/
 		// 获取缓存中的全屏配置
 		if (Session.get('isTagsViewCurrenFull')) {
 			stores.setCurrenFullscreen(Session.get('isTagsViewCurrenFull'));
@@ -71,6 +74,15 @@ onMounted(() => {
 onUnmounted(() => {
 	mittBus.off('openSetingsDrawer', () => {});
 });
+const getThemeConfig = () => {
+  getThemeConfigApi({}).then(res=>{
+     if(res&&res.code==200){
+       console.log(res.data)
+       storesThemeConfig.setThemeConfig({ themeConfig: res.data })
+       document.documentElement.style.cssText = Local.get('themeConfigStyle');
+     }
+  })
+}
 // 监听路由的变化，设置网站标题
 watch(
 	() => route.path,

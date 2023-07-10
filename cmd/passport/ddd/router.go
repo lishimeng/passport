@@ -16,6 +16,5 @@ func Route(root *iris.Application) {
 	signup.Route(p.Party("/register"))
 	user.Route(p.Party("/user"))
 	send.Route(p.Party("/notify"))
-
 	theme.Route(p.Party("/theme"))
 }

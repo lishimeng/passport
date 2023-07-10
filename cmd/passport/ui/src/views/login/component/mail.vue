@@ -4,7 +4,7 @@
       <el-input text :placeholder="$t('message.mail.mail')" v-model="state.ruleForm.userName" clearable
                 autocomplete="off">
         <template #prefix>
-          <i class="iconfont icon-dianhua el-input__icon"></i>
+          <i class="iconfont icon-gerenzhongxin el-input__icon"></i>
         </template>
       </el-input>
     </el-form-item>
