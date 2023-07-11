@@ -146,6 +146,9 @@ export const useThemeConfig = defineStore('themeConfig', {
 			globalI18n: 'zh-cn',
 			// 默认全局组件大小，可选值"<large|'default'|small>"，默认 'large'
 			globalComponentSize: 'large',
+			loginMini:'./src/assets/logo-mini.svg',
+			loginMain:'./src/assets/login-main.svg',
+			loginTitle:'Passport'
 		},
 	}),
 	actions: {
