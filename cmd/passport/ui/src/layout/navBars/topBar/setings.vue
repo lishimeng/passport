@@ -455,7 +455,7 @@ const state = reactive({
 
 // 获取布局配置信息
 const getThemeConfig = computed(() => {
-  console.log("themeConfig:",themeConfig.value)
+  // console.log("themeConfig:",themeConfig.value)
 	return themeConfig.value;
 });
 // 1、全局主题

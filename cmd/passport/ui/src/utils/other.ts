@@ -53,8 +53,11 @@ export function useTitle() {
 const updateFavicon = () => {
     const {themeConfig} = storeToRefs(stores);
     const link = document.querySelector("link[rel*='icon']");
+    // @ts-ignore
     link.rel = "icon";
+    // @ts-ignore
     link.href = themeConfig.value.loginMini;
+    // @ts-ignore
     document.getElementsByTagName("head")[0].appendChild(link);
 };
 
