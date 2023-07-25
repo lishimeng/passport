@@ -7,7 +7,6 @@ import (
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/internal/db/model"
-	"github.com/lishimeng/passport/internal/oauth2"
 	"github.com/pkg/errors"
 )
 
@@ -26,17 +25,29 @@ func authorizeCode(ctx iris.Context) {
 	var resp AuthorizeTokenResp
 	channel := ctx.URLParam("channel")
 	code := ctx.URLParam("code")
-	if len(channel) == 0 || len(code) == 0 {
-		log.Debug("channel:[%s] code:[%s]", channel, code)
+	appId := ctx.URLParam("appId")
+	if len(code) == 0 {
+		log.Debug("code:[%s]", code)
 		resp.Code = tool.RespCodeError
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	switch model.SocialCategory(channel) {
+	if len(appId) > 0 {
+		log.Debug("指定appId:%s", appId)
+	}
+	sc, err := getAppConfig(channel, appId)
+	if err != nil {
+		log.Debug(errors.Wrapf(err, "can't find app_config:[%s:%s]", channel, appId))
+		resp.Code = tool.RespCodeError
+		tool.ResponseJSON(ctx, resp)
+		return
+	}
+	switch sc.Channel {
 	case model.WeChatMiniProgram:
 		var wxToken miniwx.WxMiniLoginResp
 		log.Debug("wx mini authorize code: %s", code)
-		wxToken, err = getWxMiniToken(code)
+
+		wxToken, err = getWxMiniToken(sc.AppId, sc.AppSecret, code)
 		if err == nil {
 			resp.AuthorizeToken = wxToken.SessionKey
 			resp.OpenId = wxToken.OpenId
@@ -56,8 +67,8 @@ func authorizeCode(ctx iris.Context) {
 	tool.ResponseJSON(ctx, resp)
 }
 
-func getWxMiniToken(code string) (resp miniwx.WxMiniLoginResp, err error) {
-	handler := oauth2.GetWxMini()
+func getWxMiniToken(appId, secret, code string) (resp miniwx.WxMiniLoginResp, err error) {
+	handler := miniwx.New(miniwx.WithAuth(appId, secret))
 
 	if handler != nil {
 		resp, err = handler.AuthorizeCode(code)

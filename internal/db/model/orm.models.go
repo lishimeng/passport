@@ -2,7 +2,7 @@ package model
 
 func Tables() (t []interface{}) {
 	t = append(t,
-		new(OpenClient),
+		//new(OpenClient),
 		new(Account),
 		new(Tenant),
 		new(TenantAccount),

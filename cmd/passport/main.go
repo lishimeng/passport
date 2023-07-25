@@ -49,17 +49,11 @@ func _main() (err error) {
 			return err
 		}
 		//配置过期时间
-		switch etc.Config.Ttl.TimeType {
-		case "Hour":
-			etc.TokenTTL = time.Hour * time.Duration(etc.Config.Ttl.Time)
-			break
-		case "Minute":
-			etc.TokenTTL = time.Minute * time.Duration(etc.Config.Ttl.Time)
-			break
-		case "Second":
-			etc.TokenTTL = time.Second * time.Duration(etc.Config.Ttl.Time)
-			break
+		if etc.Config.Token.Ttl <= 0 {
+			etc.Config.Token.Ttl = 24 // 默认24小时
 		}
+		etc.TokenTTL = time.Hour * 24 * time.Duration(etc.Config.Token.Ttl)
+
 		dbConfig := persistence.PostgresConfig{
 			UserName:  etc.Config.Db.User,
 			Password:  etc.Config.Db.Password,

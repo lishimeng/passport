@@ -6,7 +6,6 @@ type Configuration struct {
 	Redis  redis
 	Token  token
 	Notify notify
-	Ttl    ttl
 }
 
 type web struct {
@@ -32,15 +31,11 @@ type token struct {
 	Enable bool
 	Issuer string
 	Key    string
+	Ttl    int
 }
 
 type notify struct {
 	Host   string
 	AppKey string
 	Secret string
-}
-
-type ttl struct {
-	Time     int64
-	TimeType string
 }
