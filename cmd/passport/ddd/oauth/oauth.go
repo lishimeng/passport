@@ -29,7 +29,6 @@ func authorizeCode(ctx iris.Context) {
 	if len(channel) == 0 || len(code) == 0 {
 		log.Debug("channel:[%s] code:[%s]", channel, code)
 		resp.Code = tool.RespCodeError
-
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
@@ -53,6 +52,7 @@ func authorizeCode(ctx iris.Context) {
 		return
 	}
 
+	resp.Code = tool.RespCodeSuccess
 	tool.ResponseJSON(ctx, resp)
 }
 
