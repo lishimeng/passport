@@ -210,8 +210,12 @@ func openLogin(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
+
 	socialAccount, err := user.GetSocialAccountById(req.SocialAccountId, req.LoginType, 0)
 	if err != nil {
+		go func() {
+			// TODO save social account
+		}()
 		resp.Code = tool.RespCodeError
 		resp.Message = "未绑定"
 		tool.ResponseJSON(ctx, resp)
@@ -236,6 +240,7 @@ func openLogin(ctx iris.Context) {
 		_ = saveToken(tokenContent)
 	}()
 	resp.Code = tool.RespCodeSuccess
+	resp.Uid = account.Id
 	resp.Token = string(tokenContent)
 	tool.ResponseJSON(ctx, resp)
 	return

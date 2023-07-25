@@ -15,5 +15,8 @@ type SocialAccount struct {
 type SocialCategory string
 
 const (
-	SocialWeChat SocialCategory = "wechat" // 微信
+	SocialWeChat      SocialCategory = "wechat"      // 微信
+	WeChatMiniProgram SocialCategory = "mini_wx"     // 微信小程序
+	WeChatOfficial    SocialCategory = "official_wx" // 微信公众号
+	WeChatQiye        SocialCategory = "qiye_wx"     // 企业微信
 )
