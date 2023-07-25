@@ -12,7 +12,7 @@ import (
 func WithAuth(handler ...iris.Handler) []iris.Handler {
 	var handlers []iris.Handler
 	if etc.Config.Token.Enable {
-		handlers = append(handlers, auth.JwtBasic(), auth.Forbidden401Handler(auth.WithJsonResp))
+		handlers = append(handlers, auth.JwtBasic(), auth.Forbidden401Handler(auth.WithJsonResp()))
 	}
 	handlers = append(handlers, handler...)
 	return handlers

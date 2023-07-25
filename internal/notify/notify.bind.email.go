@@ -19,7 +19,6 @@ func BindSendMail(code string, to string) (resp sdk.Response, err error) {
 	params["verrificationCode"] = code
 	var req = sdk.MailRequest{
 		Template:      template.Template,
-		CloudTemplate: false,
 		TemplateParam: params,
 		Title:         "验证码",
 		Receiver:      to,

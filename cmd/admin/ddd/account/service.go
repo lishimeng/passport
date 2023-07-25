@@ -2,8 +2,8 @@ package account
 
 import (
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/tool"
-	persistence "github.com/lishimeng/go-orm"
 	"github.com/lishimeng/passport/internal/db/model"
 )
 
