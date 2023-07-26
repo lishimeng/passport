@@ -10,6 +10,7 @@ import {Local, Session} from '/@/utils/storage';
 import {notFoundAndNoPower, staticRoutes} from '/@/router/route';
 import {initFrontEndControlRoutes} from '/@/router/frontEnd';
 import {initBackEndControlRoutes} from '/@/router/backEnd';
+import {getOpenUrl} from "/@/utils/openUrl";
 
 /**
  * 1、前端控制路由时：isRequestRoutes 为 false，需要写 roles，需要走 setFilterRoute 方法。
@@ -105,12 +106,7 @@ router.beforeEach(async (to, from, next) => {
     var referrer = document.referrer
     var localHref = window.location.href
     let params = to.query
-    var openUrl=''
-    if(params&&params.path){
-        openUrl=referrer +"#/"+ params.path +"?token=" + Local.get("token")
-    }else{
-        openUrl=referrer + "#/" + "?token=" + Local.get("token")
-    }
+    var openUrl=getOpenUrl(referrer,params.path)
     if ((to.path === '/login' || to.path === '/register' || to.path === '/logout') && !token) {
         next();
         NProgress.done();

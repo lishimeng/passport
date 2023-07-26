@@ -44,6 +44,7 @@ import {useRoute, useRouter} from "vue-router";
 import {formatAxis} from "/@/utils/formatTime";
 import {useI18n} from "vue-i18n";
 import {sendCodeApi} from "/@/api/send";
+import {getOpenUrl} from "/@/utils/openUrl";
 const storesThemeConfig = useThemeConfig();
 const { themeConfig } = storeToRefs(storesThemeConfig);
 const route = useRoute();
@@ -87,12 +88,7 @@ const login = () => {
       var referrer=document.referrer
       var localHref=window.location.href
       var params = route.query.params?JSON.parse(route.query.params):''
-      var openUrl=''
-      if(params&&params.path){
-        openUrl=referrer + "#/" + params.path + "?token=" + Local.get("token")
-      }else{
-        openUrl=referrer + "#/" + "?token=" + Local.get("token")
-      }
+      var openUrl=getOpenUrl(referrer,params.path)
       if(referrer&&localHref.indexOf(referrer)<0){
         window.location.replace(openUrl)
       }else{

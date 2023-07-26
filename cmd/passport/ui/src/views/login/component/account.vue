@@ -68,6 +68,7 @@ import {Local, Session} from '/@/utils/storage';
 import { formatAxis } from '/@/utils/formatTime';
 import { NextLoading } from '/@/utils/loading';
 import {signInApi} from "/@/api/login";
+import {getOpenUrl} from "/@/utils/openUrl";
 
 // 定义变量内容
 const { t } = useI18n();
@@ -132,12 +133,7 @@ const onSignIn = async () => {
       var referrer=document.referrer
       var localHref=window.location.href
       var params = route.query.params?JSON.parse(route.query.params):''
-      var openUrl=''
-      if(params&&params.path){
-        openUrl=referrer + "#/" + params.path + "?token=" + Local.get("token")
-      }else{
-        openUrl=referrer + "#/" + "?token=" + Local.get("token")
-      }
+      var openUrl=getOpenUrl(referrer,params.path)
       if(referrer&&localHref.indexOf(referrer)<0){
         window.location.replace(openUrl)
       }else{
