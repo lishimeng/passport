@@ -1,4 +1,4 @@
-import {createRouter, createWebHashHistory} from 'vue-router';
+import {createRouter, createWebHashHistory, useRoute} from 'vue-router';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import pinia from '/@/stores/index';
@@ -102,15 +102,19 @@ router.beforeEach(async (to, from, next) => {
     NProgress.configure({showSpinner: false});
     if (to.meta.title) NProgress.start();
     const token = Session.get('token');
-    // console.log("token:", token, to.path, document.referrer)
+    var referrer = document.referrer
+    var localHref = window.location.href
+    let params = to.query
+    var openUrl=''
+    if(params&&params.path){
+        openUrl=referrer +"#/"+ params.path +"?token=" + Local.get("token")
+    }else{
+        openUrl=referrer + "#/" + "?token=" + Local.get("token")
+    }
     if ((to.path === '/login' || to.path === '/register' || to.path === '/logout') && !token) {
         next();
         NProgress.done();
     } else {
-        var referrer = document.referrer
-        var localHref = window.location.href
-        // console.log(referrer, localHref, localHref.indexOf(referrer))
-        var openUrl=referrer +"#/"+ "?token=" + Local.get("token")
         if (!token) {
             next(`/login?redirect=${to.path}&params=${JSON.stringify(to.query ? to.query : to.params)}`);
             Session.clear();

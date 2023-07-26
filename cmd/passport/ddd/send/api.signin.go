@@ -32,17 +32,17 @@ func signInSendCodeGet(ctx iris.Context) {
 	}
 	//生成4位验证码
 	var code = common.RandCode(4)
-	var value string
+	//var value string
 	switch codeLoginType {
 	case string(model.SmsNotifyType):
 		key := string(model.SmsSighIn) + receiver
-		err = app.GetCache().Get(key, &value)
+		/*err = app.GetCache().Get(key, &value)
 		if err == nil && len(value) > 0 {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送短信：%s", receiver)
 		log.Debug("code:%s", code)
 		sms, err := notify.SighInSendSms(code, receiver)
@@ -60,13 +60,13 @@ func signInSendCodeGet(ctx iris.Context) {
 		break
 	case string(model.MailNotifyType):
 		key := string(model.EmailSighIn) + receiver
-		err = app.GetCache().Get(key, &value)
+		/*err = app.GetCache().Get(key, &value)
 		if err == nil && len(value) > 0 {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送邮件：%s", receiver)
 		log.Debug("code:%s", code)
 		mail, err := notify.SighInSendMail(code, receiver)
@@ -117,13 +117,13 @@ func signInSendCodePost(ctx iris.Context) {
 	switch codeLoginType {
 	case string(model.SmsNotifyType):
 		key := string(model.SmsSighIn) + receiver
-		exist := app.GetCache().Exists(key)
+		/*exist := app.GetCache().Exists(key)
 		if exist {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送短信：%s", receiver)
 		log.Debug("code:%s", code)
 		sms, err := notify.SighInSendSms(code, receiver)
@@ -141,13 +141,13 @@ func signInSendCodePost(ctx iris.Context) {
 		break
 	case string(model.MailNotifyType):
 		key := string(model.EmailSighIn) + receiver
-		exist := app.GetCache().Exists(key)
+		/*exist := app.GetCache().Exists(key)
 		if exist {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送邮件：%s", receiver)
 		log.Debug("code:%s", code)
 		mail, err := notify.SighInSendMail(code, receiver)

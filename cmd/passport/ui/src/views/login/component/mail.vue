@@ -99,7 +99,13 @@ const login = () => {
       //外部登录
       var referrer=document.referrer
       var localHref=window.location.href
-      var openUrl=referrer +"#/"+ "?token=" + res.token
+      var params = route.query.params?JSON.parse(route.query.params):''
+      var openUrl=''
+      if(params&&params.path){
+        openUrl=referrer + "#/" + params.path + "?token=" + Local.get("token")
+      }else{
+        openUrl=referrer + "#/" + "?token=" + Local.get("token")
+      }
       if(referrer&&localHref.indexOf(referrer)<0){
         window.location.replace(openUrl)
       }else {
@@ -166,9 +172,9 @@ const authCode = async () => {
     receiver:state.ruleForm.userName
   }).then(res=>{
     if(res&&res.code==200){
-      ElMessage.success("邮件发送成功，请注意查收！")
+      ElMessage.success("验证码发送成功，请注意查收！")
     }else{
-      ElMessage.error("邮件发送失败！")
+      ElMessage.error("验证码发送失败！")
       state.showCode = true
       state.codeText = "获取验证码";
       clearInterval(state.setIntervalTime);
