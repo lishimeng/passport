@@ -10,14 +10,12 @@ const router = useRouter();
 const route = useRoute();
 onMounted(() => {
   var params=route.query
-  console.log(params)
   var openUrl=''
   if(params&&params.path){
     openUrl="./#/?path="+params.path
   }else{
     openUrl="./#/"
   }
-  console.log(openUrl)
   clearTokenApi({}).then(res=>{
     Session.clear()
     Local.clear()

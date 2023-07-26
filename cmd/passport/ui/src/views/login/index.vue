@@ -57,6 +57,7 @@ import loginBg from '/@/assets/login-bg.svg';
 import {Local} from "/@/utils/storage";
 import {useRoute, useRouter} from "vue-router";
 import {checkSignInApi} from "/@/api/login";
+import {getOpenUrl} from "/@/utils/openUrl";
 
 // 引入组件
 const Account = defineAsyncComponent(() => import('/@/views/login/component/account.vue'));
@@ -84,13 +85,7 @@ onMounted(() => {
   var referrer = document.referrer
   var localHref = window.location.href
   var params =route.query.params?JSON.parse(route.query.params):''
-  var openUrl=''
-  if(params&&params.path){
-    openUrl=referrer + "#/" + params.path + "?token=" + Local.get("token")
-  }else{
-    openUrl=referrer + "#/" + "?token=" + Local.get("token")
-  }
-  console.log(openUrl)
+  var openUrl=getOpenUrl(referrer,params.path)
   checkSignInApi({
     referrer:referrer
   }).then(res=>{
