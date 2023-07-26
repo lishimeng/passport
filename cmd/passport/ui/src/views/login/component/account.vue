@@ -131,7 +131,13 @@ const onSignIn = async () => {
       //外部登录
       var referrer=document.referrer
       var localHref=window.location.href
-      var openUrl=referrer +"#/"+ "?token=" + res.token
+      var params = route.query.params?JSON.parse(route.query.params):''
+      var openUrl=''
+      if(params&&params.path){
+        openUrl=referrer + "#/" + params.path + "?token=" + Local.get("token")
+      }else{
+        openUrl=referrer + "#/" + "?token=" + Local.get("token")
+      }
       if(referrer&&localHref.indexOf(referrer)<0){
         window.location.replace(openUrl)
       }else{

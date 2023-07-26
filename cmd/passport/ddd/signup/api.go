@@ -6,6 +6,7 @@ import (
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
+	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/passwd"
 )
 
@@ -38,7 +39,8 @@ func phoneRegister(ctx iris.Context) {
 		return
 	}
 	var value string
-	err = app.GetCache().Get(req.Mobile, &value)
+	key := string(model.SmsSighup) + req.Mobile
+	err = app.GetCache().Get(key, &value)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "请先获取验证码"
@@ -61,6 +63,9 @@ func phoneRegister(ctx iris.Context) {
 	}
 	resp.Code = tool.RespCodeSuccess
 	tool.ResponseJSON(ctx, resp)
+	go func() {
+		_ = app.GetCache().Del(key)
+	}()
 }
 
 type emailRegisterReq struct {
@@ -86,7 +91,8 @@ func emailRegister(ctx iris.Context) {
 		return
 	}
 	var value string
-	err = app.GetCache().Get(req.Email, &value)
+	key := string(model.SmsSighup) + req.Email
+	err = app.GetCache().Get(key, &value)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "请先获取验证码"
@@ -109,6 +115,9 @@ func emailRegister(ctx iris.Context) {
 	}
 	resp.Code = tool.RespCodeSuccess
 	tool.ResponseJSON(ctx, resp)
+	go func() {
+		_ = app.GetCache().Del(key)
+	}()
 }
 func register(ctx iris.Context) {
 	var resp app.Response

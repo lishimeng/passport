@@ -23,16 +23,17 @@ func signUpSendCodeGet(ctx iris.Context) {
 	codeLoginType := ctx.URLParam("codeLoginType")
 	//生成4位验证码
 	var code = common.RandCode(4)
+	//var value string
 	switch codeLoginType {
 	case string(model.SmsNotifyType):
 		key := string(model.SmsSighup) + receiver
-		exist := app.GetCache().Exists(key)
-		if exist {
+		/*err:= app.GetCache().Get(key, &value)
+		if err == nil && len(value) > 0 {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送短信：%s", receiver)
 		log.Debug("code:%s", code)
 		sms, err := notify.SighUpSendSms(code, receiver)
@@ -50,13 +51,13 @@ func signUpSendCodeGet(ctx iris.Context) {
 		break
 	case string(model.MailNotifyType):
 		key := string(model.EmailSighup) + receiver
-		exist := app.GetCache().Exists(key)
-		if exist {
+		/*err:= app.GetCache().Get(key, &value)
+		if err == nil && len(value) > 0 {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送邮件：%s", receiver)
 		log.Debug("code:%s", code)
 		mail, err := notify.SighUpSendMail(code, receiver)
@@ -96,16 +97,17 @@ func signUpSendCodePost(ctx iris.Context) {
 	codeLoginType := req.CodeLoginType
 	//生成4位验证码
 	var code = common.RandCode(4)
+	//var value string
 	switch codeLoginType {
 	case string(model.SmsNotifyType):
 		key := string(model.SmsSighup) + receiver
-		exist := app.GetCache().Exists(key)
-		if exist {
+		/*err:= app.GetCache().Get(key, &value)
+		if err == nil && len(value) > 0 {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送短信：%s", receiver)
 		log.Debug("code:%s", code)
 		sms, err := notify.SighUpSendSms(code, receiver)
@@ -123,13 +125,13 @@ func signUpSendCodePost(ctx iris.Context) {
 		break
 	case string(model.MailNotifyType):
 		key := string(model.EmailSighup) + receiver
-		exist := app.GetCache().Exists(key)
-		if exist {
+		/*err:= app.GetCache().Get(key, &value)
+		if err == nil && len(value) > 0 {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送邮件：%s", receiver)
 		log.Debug("code:%s", code)
 		mail, err := notify.SighUpSendMail(code, receiver)

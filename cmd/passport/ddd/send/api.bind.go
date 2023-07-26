@@ -26,13 +26,13 @@ func bindSendCodeGet(ctx iris.Context) {
 	switch codeLoginType {
 	case string(model.SmsNotifyType):
 		key := string(model.SmsBind) + receiver
-		exist := app.GetCache().Exists(key)
+		/*exist := app.GetCache().Exists(key)
 		if exist {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送短信：%s", receiver)
 		log.Debug("code:%s", code)
 		sms, err := notify.BindSendSms(code, receiver)
@@ -50,13 +50,13 @@ func bindSendCodeGet(ctx iris.Context) {
 		break
 	case string(model.MailNotifyType):
 		key := string(model.EmailBind) + receiver
-		exist := app.GetCache().Exists(key)
+		/*exist := app.GetCache().Exists(key)
 		if exist {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送邮件：%s", receiver)
 		log.Debug("code:%s", code)
 		mail, err := notify.BindSendMail(code, receiver)
@@ -99,13 +99,13 @@ func bindSendCodePost(ctx iris.Context) {
 	switch codeLoginType {
 	case string(model.SmsNotifyType):
 		key := string(model.SmsBind) + receiver
-		exist := app.GetCache().Exists(key)
+		/*exist := app.GetCache().Exists(key)
 		if exist {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送短信：%s", receiver)
 		log.Debug("code:%s", code)
 		sms, err := notify.BindSendSms(code, receiver)
@@ -123,14 +123,15 @@ func bindSendCodePost(ctx iris.Context) {
 		break
 	case string(model.MailNotifyType):
 		key := string(model.EmailBind) + receiver
-		exist := app.GetCache().Exists(key)
+		/*exist := app.GetCache().Exists(key)
 		if exist {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码已发送,请稍后重试！"
 			tool.ResponseJSON(ctx, resp)
 			return
-		}
+		}*/
 		log.Info("发送邮件：%s", receiver)
+		log.Debug("code:%s", code)
 		mail, err := notify.BindSendMail(code, receiver)
 		if err != nil || mail.Code != float64(tool.RespCodeSuccess) {
 			resp.Code = tool.RespCodeError

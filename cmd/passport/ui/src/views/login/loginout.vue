@@ -5,13 +5,23 @@
 import {onMounted} from "vue";
 import {clearTokenApi} from "/@/api/login";
 import {Local, Session} from "/@/utils/storage";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 const router = useRouter();
+const route = useRoute();
 onMounted(() => {
+  var params=route.query
+  console.log(params)
+  var openUrl=''
+  if(params&&params.path){
+    openUrl="./#/?path="+params.path
+  }else{
+    openUrl="./#/"
+  }
+  console.log(openUrl)
   clearTokenApi({}).then(res=>{
     Session.clear()
     Local.clear()
-    window.location.replace("./#/login");
+    window.location.replace(openUrl);
   })
 });
 </script>
