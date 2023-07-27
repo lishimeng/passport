@@ -12,9 +12,9 @@ onMounted(() => {
   var params=route.query
   var openUrl=''
   if(params&&params.path){
-    openUrl="./#/?path="+params.path
+    openUrl="./#/login?path="+encodeURIComponent(params.path)
   }else{
-    openUrl="./#/"
+    openUrl="./#/login"
   }
   clearTokenApi({}).then(res=>{
     Session.clear()

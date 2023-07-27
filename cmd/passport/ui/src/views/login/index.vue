@@ -84,8 +84,7 @@ onMounted(() => {
   NextLoading.done();
   var referrer = document.referrer
   var localHref = window.location.href
-  var params =route.query.params?JSON.parse(route.query.params):''
-  var openUrl=getOpenUrl(referrer,params.path)
+  var openUrl=getOpenUrl(referrer,Local.get("openPath"),Local.get("token"))
   checkSignInApi({
     referrer:referrer
   }).then(res=>{
