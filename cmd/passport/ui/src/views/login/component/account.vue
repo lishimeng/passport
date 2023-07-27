@@ -48,7 +48,7 @@
 			</el-col>
 		</el-form-item>
 		<el-form-item class="login-animation4">
-			<el-button type="primary" class="login-content-submit" round v-waves @click="onSignIn" :loading="state.loading.signIn">
+			<el-button type="primary" class="login-content-submit" round v-waves @keyup.enter.native="onSignIn" @click="onSignIn" :loading="state.loading.signIn">
 				<span>{{ $t('message.account.accountBtnText') }}</span>
 			</el-button>
 		</el-form-item>
@@ -132,8 +132,7 @@ const onSignIn = async () => {
       //外部登录
       var referrer=document.referrer
       var localHref=window.location.href
-      var params = route.query.params?JSON.parse(route.query.params):''
-      var openUrl=getOpenUrl(referrer,params.path)
+      var openUrl=getOpenUrl(referrer,Local.get("openPath"),res.token)
       if(referrer&&localHref.indexOf(referrer)<0){
         window.location.replace(openUrl)
       }else{

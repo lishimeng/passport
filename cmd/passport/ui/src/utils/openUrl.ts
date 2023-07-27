@@ -1,16 +1,16 @@
 import {Local} from "/@/utils/storage";
 
-export function getOpenUrl(referrer:any, path:any) {
+export function getOpenUrl(referrer: any, path: any,token:any) {
     var openUrl = ''
     if (path) {
         if (path.indexOf("?") < 0) {
-            openUrl = referrer + "#" + path + "?token=" + Local.get("token")
+            openUrl = path + "?token=" + token
         } else {
-            openUrl = referrer + "#" + path + "&token=" + Local.get("token")
+            openUrl = path + "&token=" + token
         }
     } else {
-        openUrl = referrer + "#/" + "?token=" + Local.get("token")
+        openUrl = referrer + "#/" + "?token=" + token
     }
-    // console.log("openUrl",openUrl)
+    Local.set("openUrl",openUrl)
     return openUrl;
 }

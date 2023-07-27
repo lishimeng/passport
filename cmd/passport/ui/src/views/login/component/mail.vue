@@ -29,7 +29,7 @@
       </el-col>
     </el-form-item>
     <el-form-item class="login-animation3">
-      <el-button @click="login" round type="primary" v-waves class="login-content-submit">
+      <el-button @keyup.enter="login" @click="login" round type="primary" v-waves class="login-content-submit">
         <span>{{ $t('message.mobile.btnText') }}</span>
       </el-button>
     </el-form-item>
@@ -100,8 +100,7 @@ const login = () => {
       //外部登录
       var referrer=document.referrer
       var localHref=window.location.href
-      var params = route.query.params?JSON.parse(route.query.params):''
-      var openUrl=getOpenUrl(referrer,params.path)
+      var openUrl=getOpenUrl(referrer,Local.get("openPath"),res.token)
       if(referrer&&localHref.indexOf(referrer)<0){
         window.location.replace(openUrl)
       }else {

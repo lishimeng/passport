@@ -105,9 +105,9 @@ router.beforeEach(async (to, from, next) => {
     const token = Session.get('token');
     var referrer = document.referrer
     var localHref = window.location.href
-    let params = to.query
-    var openUrl=getOpenUrl(referrer,params.path)
     if ((to.path === '/login' || to.path === '/register' || to.path === '/logout') && !token) {
+        let path = to.query.path?decodeURIComponent(<string>to.query.path):""
+        Local.set("openPath",path)
         next();
         NProgress.done();
     } else {
@@ -116,9 +116,11 @@ router.beforeEach(async (to, from, next) => {
             Session.clear();
             NProgress.done();
         } else if (token && to.path === '/login') {
+            let path = to.query.path?decodeURIComponent(<string>to.query.path):""
+            Local.set("openPath",path)
             if (localHref.indexOf(referrer) < 0) {
                 // console.log("跳转：" + openUrl)
-                window.location.replace(openUrl)
+                window.location.replace(getOpenUrl(referrer,path,token))
             } else {
                 next('/home');
                 NProgress.done();
@@ -129,7 +131,7 @@ router.beforeEach(async (to, from, next) => {
         } else {
             if (localHref.indexOf(referrer) < 0) {
                 // console.log("跳转：" + openUrl)
-                window.location.replace(openUrl)
+                window.location.replace(getOpenUrl(referrer,Local.get("openPath"),token))
             } else {
                 const storesRoutesList = useRoutesList(pinia);
                 const {routesList} = storeToRefs(storesRoutesList);
