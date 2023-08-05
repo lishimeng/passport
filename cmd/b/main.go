@@ -10,6 +10,11 @@ func main() {
 		buildscript.Application{
 			Name:    "passport",
 			AppPath: "cmd/passport",
+			HasUI:   false,
+		},
+		buildscript.Application{
+			Name:    "passport",
+			AppPath: "cmd/profile",
 			HasUI:   true,
 		},
 		buildscript.Application{

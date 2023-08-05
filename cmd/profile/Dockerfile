@@ -1,4 +1,11 @@
 
+FROM node:20 as ui
+ARG NAME
+ARG VERSION
+ARG APP_PATH
+WORKDIR /ui_build
+ADD ${APP_PATH}/ui .
+RUN npm i pnpm -g && pnpm install && pnpm run build
 
 FROM golang:1.20 as build
 ARG NAME
@@ -16,6 +23,7 @@ ARG LDFLAGS=" \
     "
 WORKDIR /release
 ADD . .
+COPY --from=ui /ui_build/dist/ ${APP_PATH}/static/
 RUN go mod download && go mod verify
 RUN go build -v --ldflags "${LDFLAGS} -X ${BASE}.Compiler=$(go version | sed 's/[ ][ ]*/_/g')" -o ${NAME} ${APP_PATH}/main.go
 
