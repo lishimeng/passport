@@ -1,0 +1,155 @@
+<div class="form-body">
+    <div class="website-logo">
+        <a href="./">
+            <div class="logo">
+
+            </div>
+        </a>
+    </div>
+    <div class="row">
+        <div class="img-holder">
+            <div class="bg"></div>
+            <div class="info-holder">
+
+            </div>
+        </div>
+        <div class="form-holder">
+            <div class="form-content">
+                <div class="form-items">
+                    <h3>Passport.</h3>
+                    <p>Passport.</p>
+                    <div class="page-links">
+                        <a href="" class="active">登录</a>
+<!--                        <a href="./register">注册</a>-->
+                    </div>
+                    <form action="#" onsubmit="return login()">
+                        <input class="form-control" type="text" id="username" name="username"
+                               placeholder="用户名/邮箱/手机号" required="">
+                        <input class="form-control" type="password" id="password" name="password" placeholder="密码"
+                               required="">
+<!--                        <input type="checkbox" id="chk1"><label for="chk1">Remmeber me</label>-->
+                        <div class="form-button">
+                            <button id="submit" class="ibtn">登录</button>
+<!--                            <a href="./forget">忘记密码?</a>-->
+                        </div>
+                    </form>
+                    <div class="other-links">
+                        <!-- <span>Or login with</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <span hidden="hidden" id="path">{{.Path}}</span>
+</div>
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/popper.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+<script src="static/js/main.js"></script>
+<script type="application/javascript">
+    let path = decodeURIComponent($("#path").text());
+    console.log(path)
+    let token = window.localStorage.getItem("token");
+    $(document).ready(function () {
+        checkLogin();
+    });
+
+    function checkLogin() {
+        if (token) {
+            $.ajax({
+                url: "./api/sign_in/checkToken",//要请求的服务器url
+                data: JSON.stringify({
+                    "referre": window.location.referrer,
+                }),
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+                contentType: "application/json;charset=utf-8",
+                async: true,//是否是异步请求
+                cache: false,//是否缓存结果
+                type: "POST",//请求方式
+                dataType: "json",//服务器返回什么类型数据 text xml javascript json(javascript对象)
+                success: function (result) {//函数会在服务器执行成功后执行，result就是服务器返回结果
+                    console.log(result);
+                    if (result && result.code == 200) {
+                        alert("您已登录!!!")
+                        if (path) {
+                            var openUrl = '';
+                            if (path.indexOf("?") < 0) {
+                                openUrl = path + "?token=" + token
+                            } else {
+                                openUrl = path + "&token=" + token
+                            }
+                            window.location.replace(openUrl)
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("error", error);
+                }
+            });
+        }
+    }
+
+    function login() {
+        var username = $("#username").val();
+        var password = $("#password").val();
+        $.ajax({
+            url: "./api/sign_in/login",//要请求的服务器url
+            data: JSON.stringify({
+                loginType: "pc",
+                userName: username,
+                password: password,
+                code: "111111"
+            }),
+            contentType: "application/json;charset=utf-8",
+            async: true,//是否是异步请求
+            cache: false,//是否缓存结果
+            type: "POST",//请求方式
+            dataType: "json",//服务器返回什么类型数据 text xml javascript json(javascript对象)
+            success: function (result) {//函数会在服务b器执行成功后执行，result就是服务器返回结果
+                console.log(result);
+                if (result && result.code == 200) {
+                    window.localStorage.setItem("token", result.token)
+                    alert("登录成功")
+                    if (path) {
+                        var openUrl = '';
+                        if (path.indexOf("?") < 0) {
+                            openUrl = path + "?token=" + result.token
+                        } else {
+                            openUrl = path + "&token=" + result.token
+                        }
+                        window.location.replace(openUrl)
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("error", error);
+            }
+        });
+        return false
+    }
+
+    /*$(function(){
+        $("#submit").click(function(){
+            var username=$("#username").val();
+            var password=$("#password").val();
+            console.log(username,password)
+            /!*$.ajax({
+                url:"/r",//要请求的服务器url
+                data:{ins:ins},//第一个name对应的是后端request.getParameter("name")的name、第二个name对应的是此js中的var name = $("#name").val();的name
+                async:true,//是否是异步请求
+                cache:false,//是否缓存结果
+                type:"POST",//请求方式
+                dataType:"text",//服务器返回什么类型数据 text xml javascript json(javascript对象)
+                success:function(result){//函数会在服务器执行成功后执行，result就是服务器返回结果
+                    console.log(result);
+                    $("#re").html(result);
+                },
+                error:function(jqXHR, textStatus, errorThrown) {
+
+                }
+            });*!/
+        });
+    });*/
+</script>

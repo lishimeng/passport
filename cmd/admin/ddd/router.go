@@ -6,7 +6,7 @@ import (
 	"github.com/lishimeng/passport/cmd/admin/ddd/tenant"
 )
 
-func Route(root iris.Party) {
+func Route(root *iris.Application) {
 
 	account.Route(root.Party("/account"))
 
