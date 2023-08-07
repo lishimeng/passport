@@ -51,14 +51,12 @@ push_image(){
 build_all(){
   checkout_tag
   build_image 'passport' 'cmd/passport'
-  build_image 'passport' 'cmd/profile'
-  build_image 'passport-admin' 'cmd/admin'
+  build_image 'passport-profile' 'cmd/profile'
 }
 
 push_all(){
   push_image 'passport'
-  push_image 'passport'
-  push_image 'passport-admin'
+  push_image 'passport-profile'
 }
 
 case  $1 in

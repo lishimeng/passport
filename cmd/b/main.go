@@ -13,15 +13,11 @@ func main() {
 			HasUI:   false,
 		},
 		buildscript.Application{
-			Name:    "passport",
+			Name:    "passport-profile",
 			AppPath: "cmd/profile",
 			HasUI:   true,
 		},
-		buildscript.Application{
-			Name:    "passport-admin",
-			AppPath: "cmd/admin",
-			HasUI:   false,
-		})
+	)
 	if err != nil {
 		fmt.Println(err)
 	} else {
