@@ -1,0 +1,37 @@
+<div>
+    <span id="path" hidden="hidden">{{.Path }}</span>
+</div>
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/popper.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+<script src="static/js/main.js"></script>
+<script type="application/javascript">
+    let path = decodeURIComponent($("#path").text());
+    let token = window.localStorage.getItem("token");
+
+    $(document).ready(function () {
+        console.log(path, token)
+        logout();
+    });
+
+    function logout() {
+        $.ajax({
+            url: "./api/sign_in/clearToken",//要请求的服务器url
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            contentType: "application/json;charset=utf-8",
+            async: true,//是否是异步请求
+            cache: false,//是否缓存结果
+            type: "POST",//请求方式
+            dataType: "json",//服务器返回什么类型数据 text xml javascript json(javascript对象)
+            success: function (result) {//函数会在服务器执行成功后执行，result就是服务器返回结果
+                window.localStorage.removeItem("token")
+                window.location.replace("./login?path=" + encodeURIComponent(path))
+            },
+            error: function (xhr, status, error) {
+                console.log("error", error);
+            }
+        });
+    }
+</script>

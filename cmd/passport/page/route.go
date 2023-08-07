@@ -17,9 +17,11 @@ func application(app *iris.Application) {
 }
 
 func Route(p *iris.Application) {
-
 	application(p)
 	// 这里不要用prefix为api的路径
 	p.Get("/", index)
 	p.Get("/login", login)
+	p.Get("/register", register)
+	p.Get("/forget", forget)
+	p.Get("/logout", logout)
 }

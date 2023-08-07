@@ -1,1 +1,17 @@
-<div>{{ .Text }}</div>
+<div>{{ .Text }}
+<div>
+    <input type="button" value="Save Values" onclick="clickPage()" />
+</div>
+
+</div>
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/popper.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+<script src="static/js/main.js"></script>
+<script type="application/javascript">
+    function clickPage() {
+        var path='./login?path='+encodeURIComponent('https://passport.thingplecloud.com/#/login?redirect=/&params={}');
+        console.log(path)
+        window.location.href=path
+    }
+</script>

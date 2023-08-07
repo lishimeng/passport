@@ -41,7 +41,10 @@ func clearToken(ctx iris.Context) {
 	tokenVal, _ := tool.GetAuth(ctx)
 	log.Info("token:%s", tokenVal)
 	key := token.Digest([]byte(tokenVal))
-	app.GetCache().Set(key, "")
+	log.Info("key:%s", key)
+	if app.GetCache().Exists(key) {
+		app.GetCache().Del(key)
+	}
 	resp.Code = tool.RespCodeSuccess
 	tool.ResponseJSON(ctx, resp)
 }
