@@ -97,6 +97,7 @@ func _main() (err error) {
 		}
 		builder.EnableDatabase(dbConfig.Build(),
 			model.Tables()...).
+			SetWebLogLevel("DEBUG").
 			EnableStaticWeb(func() http.FileSystem {
 				return http.FS(static.Static)
 			}).
