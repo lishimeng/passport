@@ -1,17 +1,17 @@
-import {createRouter, createWebHashHistory, useRoute} from 'vue-router';
+import { createRouter, createWebHashHistory, useRoute } from 'vue-router';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import pinia from '/@/stores/index';
-import {storeToRefs} from 'pinia';
-import {useKeepALiveNames} from '/@/stores/keepAliveNames';
-import {useRoutesList} from '/@/stores/routesList';
-import {useThemeConfig} from '/@/stores/themeConfig';
-import {Local, Session} from '/@/utils/storage';
-import {notFoundAndNoPower, staticRoutes} from '/@/router/route';
-import {initFrontEndControlRoutes} from '/@/router/frontEnd';
-import {initBackEndControlRoutes} from '/@/router/backEnd';
-import {getOpenUrl} from "/@/utils/openUrl";
-
+import { storeToRefs } from 'pinia';
+import { useKeepALiveNames } from '/@/stores/keepAliveNames';
+import { useRoutesList } from '/@/stores/routesList';
+import { useThemeConfig } from '/@/stores/themeConfig';
+import { Local, Session } from '/@/utils/storage';
+import { notFoundAndNoPower, staticRoutes } from '/@/router/route';
+import { initFrontEndControlRoutes } from '/@/router/frontEnd';
+import { initBackEndControlRoutes } from '/@/router/backEnd';
+import { getOpenUrl } from "/@/utils/openUrl";
+import { login } from '/@/utils/passport';
 /**
  * 1、前端控制路由时：isRequestRoutes 为 false，需要写 roles，需要走 setFilterRoute 方法。
  * 2、后端控制路由时：isRequestRoutes 为 true，不需要写 roles，不需要走 setFilterRoute 方法），
@@ -23,8 +23,8 @@ import {getOpenUrl} from "/@/utils/openUrl";
 
 // 读取 `/src/stores/themeConfig.ts` 是否开启后端控制路由配置
 const storesThemeConfig = useThemeConfig(pinia);
-const {themeConfig} = storeToRefs(storesThemeConfig);
-const {isRequestRoutes} = themeConfig.value;
+const { themeConfig } = storeToRefs(storesThemeConfig);
+const { isRequestRoutes } = themeConfig.value;
 
 /**
  * 创建一个可以被 Vue 应用程序使用的路由实例
@@ -85,7 +85,7 @@ export function formatTwoStageRoutes(arr: any) {
                 v.meta['isDynamic'] = true;
                 v.meta['isDynamicPath'] = v.path;
             }
-            newArr[0].children.push({...v});
+            newArr[0].children.push({ ...v });
             // 存 name 值，keep-alive 中 include 使用，实现路由的缓存
             // 路径：/@/layout/routerView/parent.vue
             if (newArr[0].meta.isKeepAlive && v.meta.isKeepAlive) {
@@ -98,62 +98,74 @@ export function formatTwoStageRoutes(arr: any) {
     return newArr;
 }
 
+// await initControlRoutes()
+
 // 路由加载前
 router.beforeEach(async (to, from, next) => {
-    NProgress.configure({showSpinner: false});
+    NProgress.configure({ showSpinner: false });
     if (to.meta.title) NProgress.start();
-    const token = Session.get('token');
-    var referrer = document.referrer
-    var localHref = window.location.href
-    if ((to.path === '/login' || to.path === '/register' || to.path === '/logout') && !token) {
-        let path = to.query.path?decodeURIComponent(<string>to.query.path):""
-        Local.set("openPath",path)
-        next();
+    const token = Local.get('token');
+    // 路径处理
+    if (getQuery("token")) {
+        Local.set('token', getQuery("token"))
+        await initControlRoutes(to, from, next)
+        // next();
         NProgress.done();
+    } else if (!token) {
+        // resetRoute();
+        Local.remove("token")
+        NProgress.done();
+        login()
     } else {
-        if (!token) {
-            next(`/login?redirect=${to.path}&params=${JSON.stringify(to.query ? to.query : to.params)}`);
-            Session.clear();
-            NProgress.done();
-        } else if (token && to.path === '/login') {
-            let path = to.query.path?decodeURIComponent(<string>to.query.path):""
-            Local.set("openPath",path)
-            if (localHref.indexOf(referrer) < 0) {
-                // console.log("跳转：" + openUrl)
-                window.location.replace(getOpenUrl(referrer,path,token))
-            } else {
-                next('/home');
-                NProgress.done();
-            }
-        }else if(token && to.path === '/logout'){
-            next();
-            NProgress.done();
-        } else {
-            if (localHref.indexOf(referrer) < 0) {
-                // console.log("跳转：" + openUrl)
-                window.location.replace(getOpenUrl(referrer,Local.get("openPath"),token))
-            } else {
-                const storesRoutesList = useRoutesList(pinia);
-                const {routesList} = storeToRefs(storesRoutesList);
-                if (routesList.value.length === 0) {
-                    if (isRequestRoutes) {
-                        // 后端控制路由：路由数据初始化，防止刷新时丢失
-                        await initBackEndControlRoutes();
-                        // 解决刷新时，一直跳 404 页面问题，关联问题 No match found for location with path 'xxx'
-                        // to.query 防止页面刷新时，普通路由带参数时，参数丢失。动态路由（xxx/:id/:name"）isDynamic 无需处理
-                        next({path: to.path, query: to.query});
-                    } else {
-                        // https://gitee.com/lyt-top/vue-next-admin/issues/I5F1HP
-                        await initFrontEndControlRoutes();
-                        next({path: to.path, query: to.query});
-                    }
-                } else {
-                    next();
-                }
-            }
-        }
+        await initControlRoutes(to, from, next)
+        NProgress.done();
+        // const storesRoutesList = useRoutesList(pinia);
+        // const { routesList } = storeToRefs(storesRoutesList);
+        // if (routesList.value.length === 0) {
+        //     if (isRequestRoutes) {
+        //         // 后端控制路由：路由数据初始化，防止刷新时丢失
+        //         await initBackEndControlRoutes();
+        //     } else {
+        //         // https://gitee.com/lyt-top/vue-next-admin/issues/I5F1HP
+        //         await initFrontEndControlRoutes();
+        //     }
+        //     next({ ...to, replace: true });
+        // } else {
+        //     next();
+        // }
     }
 });
+
+async function initControlRoutes(to, from, next) {
+    console.log("initControlRoutes")
+    console.log(to)
+    const storesRoutesList = useRoutesList(pinia);
+    const { routesList } = storeToRefs(storesRoutesList);
+    if (routesList.value.length === 0) {
+        if (isRequestRoutes) {
+            // 后端控制路由：路由数据初始化，防止刷新时丢失
+            await initBackEndControlRoutes();
+            next({ ...to, replace: true });
+        } else {
+            // https://gitee.com/lyt-top/vue-next-admin/issues/I5F1HP
+            await initFrontEndControlRoutes();
+            next({ ...to, replace: true });
+        }
+    } else {
+        next();
+    }
+}
+
+function getQuery(params: string) {
+    var query = location.href.substring(location.href.indexOf("?") + 1)
+    var vars = query.split("&");
+    console.log("query: ", query)
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == params) return pair[1]
+    }
+    return false
+}
 
 // 路由加载后
 router.afterEach(() => {

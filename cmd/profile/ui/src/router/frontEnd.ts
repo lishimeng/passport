@@ -23,6 +23,7 @@ export async function initFrontEndControlRoutes() {
 	if (window.nextLoading === undefined) NextLoading.start();
 	// 无 token 停止执行下一步
 	if (!Local.get('token')) return false;
+	console.log("initFrontEndControlRoutes")
 	// console.log(Local.get('token'))
 	// 触发初始化用户信息 pinia
 	// https://gitee.com/lyt-top/vue-next-admin/issues/I5F1HP

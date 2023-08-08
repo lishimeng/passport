@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import {Local, Session} from '/@/utils/storage';
-import qs from 'qs';
+import { login, logout } from '/@/utils/passport';
 
 // 配置新建一个 axios 实例
 const service: AxiosInstance = axios.create({
@@ -35,20 +35,25 @@ service.interceptors.response.use(
 	(response) => {
 		// 对响应数据做点什么
 		const res = response.data;
-		/*if (res.code && res.code !== 0) {
+		if (res.code && res.code !== 200) {
 			// `token` 过期或者账号已在别处登录
-			if (res.code === 401 || res.code === 4001) {
-				Session.clear(); // 清除浏览器全部临时缓存
-				window.location.href = '/'; // 去登录页
-				ElMessageBox.alert('你已被登出，请重新登录', '提示', {})
-					.then(() => {})
-					.catch(() => {});
+			if (res.code === 401) {
+				Local.remove("token")
+				ElMessage({
+					message: '请重新登录',
+					type: 'warning',
+				})
+				login()
+			} else if (res.code === 402) {
+				Local.remove("token")
+				logout()
+			} else if (res.code == 500) {
+				ElMessage.error(res.message);
 			}
 			return Promise.reject(service.interceptors.response);
 		} else {
-			return res;
-		}*/
-		return res;
+			return response.data;
+		}
 	},
 	(error) => {
 		// 对响应错误做点什么

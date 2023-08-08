@@ -16,7 +16,7 @@ import other from '/@/utils/other';
 import {Local, Session} from '/@/utils/storage';
 import mittBus from '/@/utils/mitt';
 import setIntroduction from '/@/utils/setIconfont';
-import {getThemeConfigApi} from "/@/api/themeconfig";
+// import {getThemeConfigApi} from "/@/api/themeconfig";
 
 // 引入组件
 const Setings = defineAsyncComponent(() => import('/@/layout/navBars/topBar/setings.vue'));
@@ -75,14 +75,16 @@ onUnmounted(() => {
   });
 });
 const getThemeConfig = () => {
-  getThemeConfigApi({}).then(res => {
-    if (res && res.code == 200 && Object.keys(res.data).length > 0) {
-      setConfig(res.data, themeConfig.value)
-    } else {
-      storesThemeConfig.setThemeConfig({themeConfig: themeConfig.value});
-      document.documentElement.style.cssText = Local.get('themeConfigStyle');
-    }
-  })
+  storesThemeConfig.setThemeConfig({themeConfig: themeConfig.value});
+  document.documentElement.style.cssText = Local.get('themeConfigStyle');
+  // getThemeConfigApi({}).then(res => {
+  //   if (res && res.code == 200 && Object.keys(res.data).length > 0) {
+  //     setConfig(res.data, themeConfig.value)
+  //   } else {
+  //     storesThemeConfig.setThemeConfig({themeConfig: themeConfig.value});
+  //     document.documentElement.style.cssText = Local.get('themeConfigStyle');
+  //   }
+  // })
 }
 const setConfig = async (newArray: any, oldArray: any) => {
   let map = new Map()

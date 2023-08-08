@@ -56,7 +56,7 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
 					isLink: '',
 					isHide: false,
 					isKeepAlive: true,
-					isAffix: false,
+					isAffix: true,
 					isIframe: false,
 					roles: ['admin', 'common'],
 					icon: 'iconfont icon-gerenzhongxin',
@@ -131,15 +131,15 @@ export const dynamicRoutes: Array<RouteRecordRaw> = [
  * @link 参考：https://next.router.vuejs.org/zh/guide/essentials/history-mode.html#netlify
  */
 export const notFoundAndNoPower = [
-	{
-		path: '/:path(.*)*',
-		name: 'notFound',
-		component: () => import('/@/views/error/404.vue'),
-		meta: {
-			title: 'message.staticRoutes.notFound',
-			isHide: true,
-		},
-	},
+	// {
+	// 	path: '/:path(.*)*',
+	// 	name: 'notFound',
+	// 	component: () => import('/@/views/error/404.vue'),
+	// 	meta: {
+	// 		title: 'message.staticRoutes.notFound',
+	// 		isHide: true,
+	// 	},
+	// },
 	{
 		path: '/401',
 		name: 'noPower',
