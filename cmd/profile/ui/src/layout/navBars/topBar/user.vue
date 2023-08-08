@@ -79,7 +79,8 @@ import { useThemeConfig } from '/@/stores/themeConfig';
 import other from '/@/utils/other';
 import mittBus from '/@/utils/mitt';
 import { Session, Local } from '/@/utils/storage';
-import {clearTokenApi} from "/@/api/login";
+// import {clearTokenApi} from "/@/api/login";
+import { logout } from '/@/utils/passport';
 
 // 引入组件
 const UserNews = defineAsyncComponent(() => import('/@/layout/navBars/topBar/userNews.vue'));
@@ -147,14 +148,8 @@ const onHandleCommandClick = (path: string) => {
 			},
 		})
 			.then(async () => {
-        clearTokenApi({}).then(res=>{
-          console.log("清理缓存",res)
-          // // 清除缓存/token等
-          Session.clear();
-          Local.clear();
-          // // 使用 reload 时，不需要调用 resetRoute() 重置路由
-          window.location.reload();
-        })
+        Local.remove("token")
+				logout()
 			})
 			.catch(() => {});
 	} else if (path === 'wareHouse') {
