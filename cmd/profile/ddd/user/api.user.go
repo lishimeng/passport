@@ -19,6 +19,7 @@ type UserInfo struct {
 	Id     int    `json:"id,omitempty"`
 	Name   string `json:"name,omitempty"`
 	Email  string `json:"email,omitempty"`
+	Phone  string `json:"phone,omitempty"`
 	Active int    `json:"active,omitempty"`
 	IsOrg  int    `json:"isOrg,omitempty"`
 	IsBind int    `json:"isBind,omitempty"`
@@ -44,6 +45,7 @@ func GetUserInfo(ctx iris.Context) {
 	resp.Item.Name = account.Name
 	resp.Item.Email = account.Email
 	resp.Item.Active = account.Active
+	resp.Item.Phone = account.Mobile
 	resp.Item.IsOrg = 0
 	resp.Item.IsBind = 0
 	_, err = GetTenantAccountByUid(account.Id)

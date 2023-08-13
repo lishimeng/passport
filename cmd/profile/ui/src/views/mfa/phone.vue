@@ -3,7 +3,7 @@
 		<el-row>
 
 			<!-- 消息通知 -->
-			
+
 
 			<!-- 营销推荐 -->
 
@@ -15,58 +15,155 @@
 						<div class="personal-edit-safe-item">
 							<div class="personal-edit-safe-item-left">
 								<div class="personal-edit-safe-item-left-label">绑定手机</div>
-								<div class="personal-edit-safe-item-left-value">已绑定手机：{{ state.phone }}</div>
+								<div class="personal-edit-safe-item-left-value">已绑定手机：{{ mfaPhoneState.phone }}</div>
 							</div>
 							<div class="personal-edit-safe-item-right">
-								<el-button text type="primary">立即修改</el-button>
+								<el-button text type="primary" @click="showDrawer()">立即修改</el-button>
 							</div>
 						</div>
 					</div>
 				</el-card>
 			</el-col>
 		</el-row>
+		<el-drawer title="修改绑定手机" v-model="state.showDrawer">
+			<el-form :model="mfaPhoneState.phoneForm" style="padding: 30px 30px;" label-width="100px">
+				<el-form-item label="新手机号">
+					<el-input v-model="mfaPhoneState.phoneForm.phone" placeholder="请输入新的手机号"></el-input>
+				</el-form-item>
+				<el-form-item label="验证码">
+					<el-row justify="space-between" :gutter="20">
+						<el-col :span="16">
+							<el-input v-model="mfaPhoneState.phoneForm.code" placeholder="请输入短信验证码"></el-input>
+						</el-col>
+						<el-col :span="8">
+							<el-button type="success" @click="sendCode()" :disabled="!state.canSendCode"> 获取验证码 </el-button>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-row justify="center">
+					<el-col :span="6">
+						<el-button type="primary" style="width: 200px" @click="submit()"> 确定 </el-button>
+					</el-col>
+				</el-row>
+			</el-form>
+		</el-drawer>
 	</div>
 </template>
 
 <script setup lang="ts" name="MfaPhone">
 import { reactive, computed } from 'vue';
 import { formatAxis } from '/@/utils/formatTime';
+import { storeToRefs } from "pinia";
+import { useUserInfo } from "/@/stores/userInfo";
+import { ElMessage } from 'element-plus';
+import { bindPhoneApi, bindSendCodeApi } from '/@/api/login'
+import { verifyPhone } from '/@/utils/toolsValidate';
+import pinia from '/@/stores/index';
+import { Local } from '/@/utils/storage';
+const stores = useUserInfo();
+const { userInfos } = storeToRefs(stores);
 
 // 定义变量内容
-const state = reactive<MfaPhoneState>({
-	phone: '132****4108',
+const mfaPhoneState = reactive<MfaPhoneState>({
+	phone: userInfos.value.phone,
 	phoneForm: {
 		phone: '',
 		code: '',
 	}
 });
+const state = reactive({
+	showDrawer: false,
+	canSendCode: true,
+})
 
 // 当前时间提示语
 const currentTime = computed(() => {
 	return formatAxis(new Date());
 });
+
+const showDrawer = () => {
+	mfaPhoneState.phoneForm.phone = ""
+	mfaPhoneState.phoneForm.code = ""
+	state.showDrawer = true
+	state.canSendCode = true
+}
+
+const sendCode = () => {
+	if (!verifyPhone(mfaPhoneState.phoneForm.phone)) {
+		ElMessage.warning("请输入11位手机号!")
+		return
+	}
+	state.canSendCode = false
+	setTimeout(() => {
+		state.canSendCode = true
+	}, 10000)
+	bindSendCodeApi({
+		receiver: mfaPhoneState.phoneForm.phone,
+		codeLoginType: "sms",
+		loginType: "",
+	}).then((res) => {
+		if (res && res.code == 200) {
+			ElMessage.success("验证码已发送，请注意查收")
+		} else {
+			ElMessage.warning("验证码发送失败！")
+			state.canSendCode = true
+		}
+	}).catch((err) => {
+		console.log(err)
+	})
+}
+
+const submit = () => {
+	if (!verifyPhone(mfaPhoneState.phoneForm.phone)) {
+		ElMessage.warning("请输入11位手机号!")
+		return
+	}
+	bindPhoneApi({
+		mobile: mfaPhoneState.phoneForm.phone,
+		code: mfaPhoneState.phoneForm.code,
+	}).then((res) => {
+		if (res && res.code == 200) {
+			ElMessage.success("绑定成功")
+			let userInfo = userInfos.value
+			userInfo.phone = mfaPhoneState.phoneForm.phone
+			Local.set("userInfo", userInfo)
+			useUserInfo(pinia).setUserInfos();
+			mfaPhoneState.phone = userInfos.value.phone
+			state.showDrawer = false
+		} else {
+			ElMessage.error("绑定失败! 手机号或验证码错误！")
+		}
+	}).catch((err) => {
+		console.log(err)
+	})
+}
 </script>
 
 <style scoped lang="scss">
 @import '../../theme/mixins/index.scss';
+
 .personal {
 	.personal-user {
 		height: 130px;
 		display: flex;
 		align-items: center;
+
 		.personal-user-left {
 			width: 100px;
 			height: 130px;
 			border-radius: 3px;
+
 			:deep(.el-upload) {
 				height: 100%;
 			}
+
 			.personal-user-left-upload {
 				img {
 					width: 100%;
 					height: 100%;
 					border-radius: 3px;
 				}
+
 				&:hover {
 					img {
 						animation: logoAnimation 0.3s ease-in-out;
@@ -74,51 +171,63 @@ const currentTime = computed(() => {
 				}
 			}
 		}
+
 		.personal-user-right {
 			flex: 1;
 			padding: 0 15px;
+
 			.personal-title {
 				font-size: 18px;
 				@include text-ellipsis(1);
 			}
+
 			.personal-item {
 				display: flex;
 				align-items: center;
 				font-size: 13px;
+
 				.personal-item-label {
 					color: var(--el-text-color-secondary);
 					@include text-ellipsis(1);
 				}
+
 				.personal-item-value {
 					@include text-ellipsis(1);
 				}
 			}
 		}
 	}
+
 	.personal-info {
 		.personal-info-more {
 			float: right;
 			color: var(--el-text-color-secondary);
 			font-size: 13px;
+
 			&:hover {
 				color: var(--el-color-primary);
 				cursor: pointer;
 			}
 		}
+
 		.personal-info-box {
 			height: 130px;
 			overflow: hidden;
+
 			.personal-info-ul {
 				list-style: none;
+
 				.personal-info-li {
 					font-size: 13px;
 					padding-bottom: 10px;
+
 					.personal-info-li-title {
 						display: inline-block;
 						@include text-ellipsis(1);
 						color: var(--el-text-color-secondary);
 						text-decoration: none;
 					}
+
 					& a:hover {
 						color: var(--el-color-primary);
 						cursor: pointer;
@@ -127,6 +236,7 @@ const currentTime = computed(() => {
 			}
 		}
 	}
+
 	.personal-recommend-row {
 		.personal-recommend-col {
 			.personal-recommend {
@@ -135,6 +245,7 @@ const currentTime = computed(() => {
 				border-radius: 3px;
 				overflow: hidden;
 				cursor: pointer;
+
 				&:hover {
 					i {
 						right: 0px !important;
@@ -142,6 +253,7 @@ const currentTime = computed(() => {
 						transition: all ease 0.3s;
 					}
 				}
+
 				i {
 					position: absolute;
 					right: -10px;
@@ -150,12 +262,14 @@ const currentTime = computed(() => {
 					transform: rotate(-30deg);
 					transition: all ease 0.3s;
 				}
+
 				.personal-recommend-auto {
 					padding: 15px;
 					position: absolute;
 					left: 0;
 					top: 5%;
 					color: var(--next-color-white);
+
 					.personal-recommend-msg {
 						font-size: 12px;
 						margin-top: 10px;
@@ -164,11 +278,13 @@ const currentTime = computed(() => {
 			}
 		}
 	}
+
 	.personal-edit {
 		.personal-edit-title {
 			position: relative;
 			padding-left: 10px;
 			color: var(--el-text-color-regular);
+
 			&::after {
 				content: '';
 				width: 2px;
@@ -180,21 +296,26 @@ const currentTime = computed(() => {
 				background: var(--el-color-primary);
 			}
 		}
+
 		.personal-edit-safe-box {
 			border-bottom: 1px solid var(--el-border-color-light, #ebeef5);
 			padding: 15px 0;
+
 			.personal-edit-safe-item {
 				width: 100%;
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
+
 				.personal-edit-safe-item-left {
 					flex: 1;
 					overflow: hidden;
+
 					.personal-edit-safe-item-left-label {
 						color: var(--el-text-color-regular);
 						margin-bottom: 5px;
 					}
+
 					.personal-edit-safe-item-left-value {
 						color: var(--el-text-color-secondary);
 						@include text-ellipsis(1);
@@ -202,6 +323,7 @@ const currentTime = computed(() => {
 					}
 				}
 			}
+
 			&:last-of-type {
 				padding-bottom: 0;
 				border-bottom: none;

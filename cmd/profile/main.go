@@ -5,16 +5,15 @@ import (
 	"fmt"
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/cache"
 	etc2 "github.com/lishimeng/app-starter/etc"
 	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/cmd/profile/ddd"
-	"github.com/lishimeng/passport/cmd/profile/static"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
-	"net/http"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -86,12 +85,21 @@ func _main() (err error) {
 				inject(storage)
 			})
 		}
+		redisOpts := cache.RedisOptions{
+			Addr:     etc.Config.Redis.Addr,
+			Password: etc.Config.Redis.Password,
+		}
+		cacheOpts := cache.Options{
+			MaxSize: 10000,
+			Ttl:     etc.TokenTTL,
+		}
 		builder.EnableDatabase(dbConfig.Build(),
 			model.Tables()...).
 			SetWebLogLevel("DEBUG").
-			EnableStaticWeb(func() http.FileSystem {
-				return http.FS(static.Static)
-			}).
+			EnableCache(redisOpts, cacheOpts).
+			//EnableStaticWeb(func() http.FileSystem {
+			//	return http.FS(static.Static)
+			//}).
 			EnableWeb(etc.Config.Web.Listen, ddd.Route).
 			PrintVersion()
 		return err
