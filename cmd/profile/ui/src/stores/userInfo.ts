@@ -15,6 +15,8 @@ export const useUserInfo = defineStore('userInfo', {
 			time: 0,
 			roles: [],
 			authBtnList: [],
+			mail: '',
+			phone: '',
 		},
 	}),
 	actions: {
@@ -49,7 +51,8 @@ export const useUserInfo = defineStore('userInfo', {
 							time: new Date().getTime(),
 							roles: defaultRoles,
 							authBtnList: defaultAuthBtnList,
-							mail:res.item.mail
+							mail:res.item.email,
+							phone: res.item.phone
 						};
 						Local.set('userInfo', userInfos);
 						resolve(userInfos);
