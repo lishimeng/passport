@@ -10,6 +10,7 @@ func Tables() (t []interface{}) {
 		new(SocialConfig),
 		new(Notify),
 		new(ThemeConfig),
+		new(PathConfig),
 	)
 	return
 }

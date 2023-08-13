@@ -19,15 +19,29 @@
                     <h3>Passport.</h3>
                     <p>Passport.</p>
                     <div class="page-links">
-                        <a href="./login" class="active">用户名密码登录</a>
-                        <a href="./phoneLogin">手机号登录</a>
+                        <a href="./login" >用户名密码登录</a>
+                        <a href="./phoneLogin" class="active">手机号登录</a>
                         <a href="./register">手机号注册</a>
                     </div>
-                    <form action="#" onsubmit="return login()">
-                        <input class="form-control" type="text" id="username" name="username"
-                               placeholder="用户名/邮箱/手机号" required="">
-                        <input class="form-control" type="password" id="password" name="password" placeholder="密码"
-                               required="">
+                    <form action="#" onsubmit="return phoneLogin()">
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control" type="text" id="mobile" name="mobile" maxlength="11"
+                                       placeholder="手机号" required="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control" type="text" id="code" name="code" placeholder="验证码"
+                                       required="">
+                            </div>
+                            <div class="col">
+                                <input type="text" hidden="hidden" id="timeNum" value="60"/>
+                                <button id="sendMsg"  type="button" class="btn btn-primary" onclick="sendSms()">
+                                    发送验证码
+                                </button>
+                            </div>
+                        </div>
 <!--                        <input type="checkbox" id="chk1"><label for="chk1">Remmeber me</label>-->
                         <div class="form-button">
                             <button id="submit" class="ibtn">登录</button>
@@ -55,6 +69,7 @@
         await getPath();
         await checkLogin();
     });
+
     function getPath(){
         $.ajax({
             url: "./api/path",//要请求的服务器url
@@ -77,6 +92,7 @@
             }
         });
     }
+
     function checkLogin() {
         if (token) {
             $.ajax({
@@ -116,16 +132,16 @@
         }
     }
 
-    function login() {
-        var username = $("#username").val();
-        var password = $("#password").val();
+    function phoneLogin() {
+        var mobile = $("#mobile").val();
+        var code = $("#code").val();
         $.ajax({
-            url: "./api/sign_in/login",//要请求的服务器url
+            url: "./api/sign_in/codeLogin",//要请求的服务器url
             data: JSON.stringify({
                 loginType: "pc",
-                userName: username,
-                password: password,
-                code: "111111"
+                userName: mobile,
+                code: code,
+                codeLoginType:"sms"
             }),
             contentType: "application/json;charset=utf-8",
             async: true,//是否是异步请求
@@ -136,7 +152,7 @@
                 console.log(result);
                 if (result && result.code == 200) {
                     window.localStorage.setItem("token", result.token)
-                    success_prompt("登录成功！",1000)
+                    success_prompt("登录成功",1000)
                     if (path) {
                         var openUrl = '';
                         if (path.indexOf("?") < 0) {
@@ -158,4 +174,42 @@
         });
         return false
     }
+
+    function sendSms() {
+        var mobile = $("#mobile").val();
+        if (!mobile) {
+            fail_prompt("请输入手机号！",1000)
+            return;
+        }
+        if (!checkTelephone(mobile)) {
+            fail_prompt("请输入正确的手机号！",1000)
+            return;
+        }
+        $.ajax({
+            url: "./api/notify/signInSendCode",//要请求的服务器url
+            data: JSON.stringify({
+                loginType: "pc",
+                codeLoginType: "sms",
+                receiver: mobile
+            }),
+            contentType: "application/json;charset=utf-8",
+            async: true,//是否是异步请求
+            cache: false,//是否缓存结果
+            type: "POST",//请求方式
+            dataType: "json",//服务器返回什么类型数据 text xml javascript json(javascript对象)
+            success: function (result) {//函数会在服务b器执行成功后执行，result就是服务器返回结果
+                console.log(result);
+                if (result && result.code == 200) {
+                    success_prompt("验证码发送成功！",1000)
+                    setTime();
+                } else {
+                    fail_prompt(result.message,1000);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("error", error);
+            }
+        });
+    }
+
 </script>

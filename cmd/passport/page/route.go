@@ -21,6 +21,7 @@ func Route(p *iris.Application) {
 	// 这里不要用prefix为api的路径
 	p.Get("/", login)
 	p.Get("/login", login)
+	p.Get("/phoneLogin", phoneLogin)
 	p.Get("/register", register)
 	p.Get("/forget", forget)
 	p.Get("/logout", logout)

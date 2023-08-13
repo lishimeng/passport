@@ -19,12 +19,29 @@
                     <h3>Passport.</h3>
                     <p>Passport.</p>
                     <div class="page-links">
-                        <a href="./login">登录</a><a href="" class="active">注册</a>
+                        <a href="./login" >用户名密码登录</a>
+                        <a href="./phoneLogin">手机号登录</a>
+                        <a href="./register" class="active">手机号注册</a>
                     </div>
-                    <form>
-                        <input class="form-control" type="text" name="name" placeholder="Full Name" required="">
-                        <input class="form-control" type="email" name="email" placeholder="E-mail Address" required="">
-                        <input class="form-control" type="password" name="password" placeholder="Password" required="">
+                    <form action="#" onsubmit="return register()">
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control" type="text" id="mobile" name="mobile" maxlength="11"
+                                       placeholder="手机号" required="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <input class="form-control" type="text" id="code" name="code" placeholder="验证码"
+                                       required="">
+                            </div>
+                            <div class="col">
+                                <input type="text" hidden="hidden" id="timeNum" value="60"/>
+                                <button id="sendMsg"  type="button" class="btn btn-primary" onclick="sendSms()">
+                                    发送验证码
+                                </button>
+                            </div>
+                        </div>
                         <div class="form-button">
                             <button id="submit" type="submit" class="ibtn">注册</button>
                         </div>
@@ -41,3 +58,74 @@
 <script src="static/js/popper.min.js"></script>
 <script src="static/js/bootstrap.min.js"></script>
 <script src="static/js/main.js"></script>
+<script type="application/javascript">
+
+    function sendSms() {
+        var mobile = $("#mobile").val();
+        if (!mobile) {
+            fail_prompt("请输入手机号！",1000);
+            return;
+        }
+        if (!checkTelephone(mobile)) {
+            fail_prompt("请输入正确的手机号！",1000);
+            return;
+        }
+        $.ajax({
+            url: "./api/notify/signUpSendCode",//要请求的服务器url
+            data: JSON.stringify({
+                loginType: "pc",
+                codeLoginType: "sms",
+                receiver: mobile
+            }),
+            contentType: "application/json;charset=utf-8",
+            async: true,//是否是异步请求
+            cache: false,//是否缓存结果
+            type: "POST",//请求方式
+            dataType: "json",//服务器返回什么类型数据 text xml javascript json(javascript对象)
+            success: function (result) {//函数会在服务b器执行成功后执行，result就是服务器返回结果
+                console.log(result);
+                if (result && result.code == 200) {
+                    success_prompt("验证码发送成功",1000)
+                    setTime();
+                } else {
+                    fail_prompt(result.message,1000);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("error", error);
+            }
+        });
+    }
+
+    function register() {
+        var mobile = $("#mobile").val();
+        var code = $("#code").val();
+        $.ajax({
+            url: "./api/register/phoneRegister",//要请求的服务器url
+            data: JSON.stringify({
+                mobile: mobile,
+                code: code
+            }),
+            contentType: "application/json;charset=utf-8",
+            async: true,//是否是异步请求
+            cache: false,//是否缓存结果
+            type: "POST",//请求方式
+            dataType: "json",//服务器返回什么类型数据 text xml javascript json(javascript对象)
+            success: function (result) {//函数会在服务b器执行成功后执行，result就是服务器返回结果
+                console.log(result);
+                if (result && result.code == 200) {
+                    success_prompt("注册成功！",1000)
+                    window.location.replace('./login')
+                } else {
+                    fail_prompt(result.message,1000);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("error", error);
+            }
+        });
+        return false
+    }
+
+
+</script>
