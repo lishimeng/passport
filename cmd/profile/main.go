@@ -12,8 +12,10 @@ import (
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/cmd/profile/ddd"
+	"github.com/lishimeng/passport/cmd/profile/static"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
+	"net/http"
 	"time"
 )
 import _ "github.com/lib/pq"
@@ -97,9 +99,9 @@ func _main() (err error) {
 			model.Tables()...).
 			SetWebLogLevel("DEBUG").
 			EnableCache(redisOpts, cacheOpts).
-			//EnableStaticWeb(func() http.FileSystem {
-			//	return http.FS(static.Static)
-			//}).
+			EnableStaticWeb(func() http.FileSystem {
+				return http.FS(static.Static)
+			}).
 			EnableWeb(etc.Config.Web.Listen, ddd.Route).
 			PrintVersion()
 		return err
