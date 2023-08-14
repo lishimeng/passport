@@ -10,6 +10,8 @@ declare interface UserInfos<T = any> {
 	time: number;
 	userName: string;
 	[key: string]: T;
+	mail: string;
+	phone: string;
 }
 declare interface UserInfosState {
 	userInfos: UserInfos;

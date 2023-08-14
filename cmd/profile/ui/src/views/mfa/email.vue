@@ -9,31 +9,121 @@
 						<div class="personal-edit-safe-item">
 							<div class="personal-edit-safe-item-left">
 								<div class="personal-edit-safe-item-left-label">绑定邮箱</div>
-								<div class="personal-edit-safe-item-left-value">已绑定邮箱：{{ state.email }}</div>
+								<div class="personal-edit-safe-item-left-value">已绑定邮箱：{{ mfaEmailState.email }}</div>
 							</div>
 							<div class="personal-edit-safe-item-right">
-								<el-button text type="primary">立即修改</el-button>
+								<el-button text type="primary" @click="showDrawer()">立即修改</el-button>
 							</div>
 						</div>
 					</div>
 				</el-card>
 			</el-col>
 		</el-row>
+		<el-drawer title="修改绑定邮箱" v-model="state.showDrawer">
+			<el-form :model="mfaEmailState.emailForm" style="padding: 30px 30px;" label-width="100px">
+				<el-form-item label="新的邮箱">
+					<el-input v-model="mfaEmailState.emailForm.email" placeholder="请输入新的邮箱"></el-input>
+				</el-form-item>
+				<el-form-item label="验证码">
+					<el-row justify="space-between" :gutter="20">
+						<el-col :span="16">
+							<el-input v-model="mfaEmailState.emailForm.code" placeholder="请输入邮箱验证码"></el-input>
+						</el-col>
+						<el-col :span="8">
+							<el-button type="success" @click="sendCode()" :disabled="!state.canSendCode"> 获取验证码 </el-button>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-row justify="center">
+					<el-col :span="6">
+						<el-button type="primary" style="width: 200px" @click="submit()"> 确定 </el-button>
+					</el-col>
+				</el-row>
+			</el-form>
+		</el-drawer>
 	</div>
 </template>
 
 <script setup lang="ts" name="MfaEmail">
 import { reactive, computed } from 'vue';
 import { formatAxis } from '/@/utils/formatTime';
-
+import { storeToRefs } from "pinia";
+import { useUserInfo } from "/@/stores/userInfo";
+import { verifyEmail } from '/@/utils/toolsValidate';
+import { ElMessage } from 'element-plus';
+import { bindEmailApi, bindSendCodeApi } from '/@/api/login'
+import { Local } from '/@/utils/storage';
+import pinia from '/@/stores/index';
+const stores = useUserInfo();
+const { userInfos } = storeToRefs(stores);
 // 定义变量内容
-const state = reactive<MfaEmailState>({
-	email: '3r****gf@***.com',
+const mfaEmailState = reactive<MfaEmailState>({
+	email: userInfos.value.mail,
 	emailForm: {
 		email: '',
 		code: '',
 	}
 });
+const state = reactive({
+	showDrawer: false,
+	canSendCode: true,
+})
+
+const showDrawer = () => {
+	mfaEmailState.emailForm.email = ""
+	mfaEmailState.emailForm.code = ""
+	state.showDrawer = true
+	state.canSendCode = true
+}
+const sendCode = () => {
+	if (!verifyEmail(mfaEmailState.emailForm.email)) {
+		ElMessage.warning("请输入11位手机号!")
+		return
+	}
+	state.canSendCode = false
+	setTimeout(() => {
+		state.canSendCode = true
+	}, 10000)
+	bindSendCodeApi({
+		receiver: mfaEmailState.emailForm.email,
+		codeLoginType: "mail",
+		loginType: "",
+	}).then((res) => {
+		if (res && res.code == 200) {
+			ElMessage.success("邮箱验证码已发送，请注意查收")
+		} else {
+			ElMessage.warning("验证码发送失败！")
+			state.canSendCode = true
+		}
+	}).catch((err) => {
+		console.log(err)
+	})
+}
+
+const submit = () => {
+	if (!verifyEmail(mfaEmailState.emailForm.email)) {
+		ElMessage.warning("请输入正确的邮箱地址!")
+		return
+	}
+	bindEmailApi({
+		email: mfaEmailState.emailForm.email,
+		code: mfaEmailState.emailForm.code,
+	}).then((res) => {
+		if (res && res.code == 200) {
+			ElMessage.success("绑定成功")
+			let userInfo = userInfos.value
+			userInfo.mail = mfaEmailState.emailForm.email
+			Local.set("userInfo", userInfo)
+			useUserInfo(pinia).setUserInfos();
+			mfaEmailState.email = userInfos.value.mail
+			state.showDrawer = false
+		} else {
+			ElMessage.error("绑定失败! 邮箱或验证码错误！")
+		}
+	}).catch((err) => {
+		console.log(err)
+	})
+}
 
 // 当前时间提示语
 const currentTime = computed(() => {

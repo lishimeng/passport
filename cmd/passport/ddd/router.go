@@ -3,6 +3,7 @@ package ddd
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/passport/cmd/passport/ddd/oauth"
+	"github.com/lishimeng/passport/cmd/passport/ddd/path"
 	"github.com/lishimeng/passport/cmd/passport/ddd/send"
 	"github.com/lishimeng/passport/cmd/passport/ddd/signin"
 	"github.com/lishimeng/passport/cmd/passport/ddd/signup"
@@ -19,4 +20,5 @@ func Route(root *iris.Application) {
 	send.Route(p.Party("/notify"))
 	theme.Route(p.Party("/theme"))
 	oauth.Route(p.Party("/oauth"))
+	path.Router(p.Party("/path"))
 }
