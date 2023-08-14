@@ -73,11 +73,9 @@
         await getPath();
         await checkLogin();
     }
-
     function next(page) {
-        window.location.href = page + "?path=" + path
+        window.location.href = page + "?path=" + encodeURIComponent(path)
     }
-
     function getPath() {
         $.ajax({
             url: "./api/path",//要请求的服务器url
