@@ -19,9 +19,9 @@
                     <h3>Passport.</h3>
                     <p>Passport.</p>
                     <div class="page-links">
-                        <a href="./login" >用户名密码登录</a>
-                        <a href="./phoneLogin" class="active">手机号登录</a>
-                        <a href="./register">手机号注册</a>
+                        <a href="#" onclick="next('./login')">用户名密码登录</a>
+                        <a href="#" onclick="next('./phoneLogin')" class="active">手机号登录</a>
+                        <a href="#" onclick="next('./register')">手机号注册</a>
                     </div>
                     <form action="#" onsubmit="return phoneLogin()">
                         <div class="row">
@@ -37,15 +37,15 @@
                             </div>
                             <div class="col">
                                 <input type="text" hidden="hidden" id="timeNum" value="60"/>
-                                <button id="sendMsg"  type="button" class="btn btn-primary" onclick="sendSms()">
+                                <button id="sendMsg" type="button" class="btn btn-primary" onclick="sendSms()">
                                     发送验证码
                                 </button>
                             </div>
                         </div>
-<!--                        <input type="checkbox" id="chk1"><label for="chk1">Remmeber me</label>-->
+                        <!--                        <input type="checkbox" id="chk1"><label for="chk1">Remmeber me</label>-->
                         <div class="form-button">
                             <button id="submit" class="ibtn">登录</button>
-<!--                            <a href="./forget">忘记密码?</a>-->
+                            <!--                            <a href="./forget">忘记密码?</a>-->
                         </div>
                     </form>
                     <div class="other-links">
@@ -64,13 +64,21 @@
 <script type="application/javascript">
     let path = decodeURIComponent($("#path").text());
     let token = window.localStorage.getItem("token");
-    let nowPath="";
-    $(document).ready(async function () {
-        await getPath();
-        await checkLogin();
+    let nowPath = "";
+    $(document).ready(function () {
+        init();
     });
 
-    function getPath(){
+    async function init() {
+        await getPath();
+        await checkLogin();
+    }
+
+    function next(page) {
+        window.location.href = page + "?path=" + path
+    }
+
+    function getPath() {
         $.ajax({
             url: "./api/path",//要请求的服务器url
             headers: {
@@ -83,8 +91,8 @@
             dataType: "json",//服务器返回什么类型数据 text xml javascript json(javascript对象)
             success: function (result) {//函数会在服务器执行成功后执行，result就是服务器返回结果
                 console.log(result);
-                if(result&&result.code==200){
-                    nowPath=result.path
+                if (result && result.code == 200) {
+                    nowPath = result.path
                 }
             },
             error: function (xhr, status, error) {
@@ -111,7 +119,7 @@
                 success: function (result) {//函数会在服务器执行成功后执行，result就是服务器返回结果
                     console.log(result);
                     if (result && result.code == 200) {
-                        success_prompt("您已登录！",1000)
+                        success_prompt("您已登录！", 1000)
                         if (path) {
                             var openUrl = '';
                             if (path.indexOf("?") < 0) {
@@ -120,8 +128,8 @@
                                 openUrl = path + "&token=" + token
                             }
                             window.location.replace(openUrl)
-                        }else{
-                            window.location.replace(nowPath+ "?token=" + token);
+                        } else {
+                            window.location.replace(nowPath + "?token=" + token);
                         }
                     }
                 },
@@ -141,7 +149,7 @@
                 loginType: "pc",
                 userName: mobile,
                 code: code,
-                codeLoginType:"sms"
+                codeLoginType: "sms"
             }),
             contentType: "application/json;charset=utf-8",
             async: true,//是否是异步请求
@@ -152,7 +160,7 @@
                 console.log(result);
                 if (result && result.code == 200) {
                     window.localStorage.setItem("token", result.token)
-                    success_prompt("登录成功",1000)
+                    success_prompt("登录成功", 1000)
                     if (path) {
                         var openUrl = '';
                         if (path.indexOf("?") < 0) {
@@ -161,11 +169,11 @@
                             openUrl = path + "&token=" + result.token
                         }
                         window.location.replace(openUrl)
-                    }else{
-                        window.location.replace(nowPath+ "?token=" + token);
+                    } else {
+                        window.location.replace(nowPath + "?token=" + result.token);
                     }
-                }else{
-                    fail_prompt(result.message,1000)
+                } else {
+                    fail_prompt(result.message, 1000)
                 }
             },
             error: function (xhr, status, error) {
@@ -178,11 +186,11 @@
     function sendSms() {
         var mobile = $("#mobile").val();
         if (!mobile) {
-            fail_prompt("请输入手机号！",1000)
+            fail_prompt("请输入手机号！", 1000)
             return;
         }
         if (!checkTelephone(mobile)) {
-            fail_prompt("请输入正确的手机号！",1000)
+            fail_prompt("请输入正确的手机号！", 1000)
             return;
         }
         $.ajax({
@@ -200,10 +208,10 @@
             success: function (result) {//函数会在服务b器执行成功后执行，result就是服务器返回结果
                 console.log(result);
                 if (result && result.code == 200) {
-                    success_prompt("验证码发送成功！",1000)
+                    success_prompt("验证码发送成功！", 1000)
                     setTime();
                 } else {
-                    fail_prompt(result.message,1000);
+                    fail_prompt(result.message, 1000);
                 }
             },
             error: function (xhr, status, error) {

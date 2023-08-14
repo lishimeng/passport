@@ -19,9 +19,9 @@
                     <h3>Passport.</h3>
                     <p>Passport.</p>
                     <div class="page-links">
-                        <a href="./login" >用户名密码登录</a>
-                        <a href="./phoneLogin">手机号登录</a>
-                        <a href="./register" class="active">手机号注册</a>
+                        <a href="#" onclick="next('./login')">用户名密码登录</a>
+                        <a href="#" onclick="next('./phoneLogin')">手机号登录</a>
+                        <a href="#" onclick="next('./register')" class="active">手机号注册</a>
                     </div>
                     <form action="#" onsubmit="return register()">
                         <div class="row">
@@ -53,13 +53,17 @@
             </div>
         </div>
     </div>
+    <span hidden="hidden" id="path">{{.Path}}</span>
 </div>
 <script src="static/js/jquery.min.js"></script>
 <script src="static/js/popper.min.js"></script>
 <script src="static/js/bootstrap.min.js"></script>
 <script src="static/js/main.js"></script>
 <script type="application/javascript">
-
+    let path = decodeURIComponent($("#path").text());
+    function next(page) {
+        window.location.href = page + "?path=" + path
+    }
     function sendSms() {
         var mobile = $("#mobile").val();
         if (!mobile) {
