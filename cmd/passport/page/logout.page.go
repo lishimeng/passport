@@ -14,7 +14,7 @@ func logout(ctx iris.Context) {
 	var data logoutModel
 	path := ctx.URLParam("path")
 	data.Title = "passport"
-	data.Path = path
+	data.Path = checkParams(path)
 	ctx.ViewLayout("layout/main")
 	err = ctx.View("logout.html", data)
 	if err != nil {

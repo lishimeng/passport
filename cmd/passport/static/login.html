@@ -51,6 +51,7 @@
     let path = decodeURIComponent($("#path").text());
     let token = window.localStorage.getItem("token");
     let nowPath = "";
+
     $(document).ready(function () {
         init();
     });
@@ -61,7 +62,7 @@
     }
 
     function next(page) {
-        window.location.href = page + "?path=" + path
+        window.location.href = page + "?path=" + encodeURIComponent(path)
     }
 
     function getPath() {
