@@ -68,7 +68,6 @@ const submit = () => {
 		return
 	}
 	changePasswordApi({
-		name: mfaPasswordState.passwordForm.name,
 		password: mfaPasswordState.passwordForm.password
 	}).then((res) => {
 		if (res && res.code == 200) {

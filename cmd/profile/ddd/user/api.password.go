@@ -3,6 +3,8 @@ package user
 import (
 	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/midware/auth"
+	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
@@ -10,7 +12,6 @@ import (
 )
 type PasswordReq struct {
 	Password string `json:"password,omitempty"`
-	Name     string `json:"name,omitempty"`
 }
 
 func changePassword(ctx iris.Context) {
@@ -23,11 +24,16 @@ func changePassword(ctx iris.Context) {
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
-	account, err := user.GetUserInfoByUserName(req.Name)
-	log.Debug("info:%s", account)
+	ui := ctx.Values().Get(auth.UserInfoKey)
+	jwt, ok := ui.(token.JwtPayload)
+	if !ok {
+		return
+	}
+	log.Debug("code:%s", jwt.Uid)
+	account, err := GetUserInfoByCode(jwt.Uid)
 	if err != nil {
 		resp.Code = tool.RespCodeError
-		resp.Message = "用户不存在"
+		resp.Message = "未查到记录"
 		tool.ResponseJSON(ctx, resp)
 		return
 	}
