@@ -37,7 +37,7 @@
                             </div>
                             <div class="col">
                                 <input type="text" hidden="hidden" id="timeNum" value="60"/>
-                                <button id="sendMsg"  type="button" class="btn btn-primary" onclick="sendSms()">
+                                <button id="sendMsg" type="button" class="btn btn-primary" onclick="sendSms()">
                                     发送验证码
                                 </button>
                             </div>
@@ -61,17 +61,19 @@
 <script src="static/js/main.js"></script>
 <script type="application/javascript">
     let path = decodeURIComponent($("#path").text());
+
     function next(page) {
-        window.location.href = page + "?path=" + path
+        window.location.href = page + "?path=" + encodeURIComponent(path)
     }
+
     function sendSms() {
         var mobile = $("#mobile").val();
         if (!mobile) {
-            fail_prompt("请输入手机号！",1000);
+            fail_prompt("请输入手机号！", 1000);
             return;
         }
         if (!checkTelephone(mobile)) {
-            fail_prompt("请输入正确的手机号！",1000);
+            fail_prompt("请输入正确的手机号！", 1000);
             return;
         }
         $.ajax({
@@ -89,10 +91,10 @@
             success: function (result) {//函数会在服务b器执行成功后执行，result就是服务器返回结果
                 console.log(result);
                 if (result && result.code == 200) {
-                    success_prompt("验证码发送成功",1000)
+                    success_prompt("验证码发送成功", 1000)
                     setTime();
                 } else {
-                    fail_prompt(result.message,1000);
+                    fail_prompt(result.message, 1000);
                 }
             },
             error: function (xhr, status, error) {
@@ -118,10 +120,10 @@
             success: function (result) {//函数会在服务b器执行成功后执行，result就是服务器返回结果
                 console.log(result);
                 if (result && result.code == 200) {
-                    success_prompt("注册成功！",1000)
+                    success_prompt("注册成功！", 1000)
                     window.location.replace('./login')
                 } else {
-                    fail_prompt(result.message,1000);
+                    fail_prompt(result.message, 1000);
                 }
             },
             error: function (xhr, status, error) {
