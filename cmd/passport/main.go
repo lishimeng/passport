@@ -76,6 +76,7 @@ func _main() (err error) {
 				provider := token.NewJwtProvider(token.WithIssuer(issuer),
 					token.WithKey(tokenKey, tokenKey), // hs256的秘钥必须是[]byte
 					token.WithAlg("HS256"),
+					token.WithDefaultTTL(etc.TokenTTL),
 				)
 				storage := token.NewLocalStorage(provider)
 				factory.Add(provider)

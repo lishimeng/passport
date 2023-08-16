@@ -25,5 +25,5 @@ appKey= "aewfvsfvadv"
 secret= "bhnsasdvdzvdvs"
 
 [ttl]
-time = 24
+time = 1
 timeType= "Hour"
