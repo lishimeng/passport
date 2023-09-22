@@ -93,6 +93,7 @@ declare interface ThemeConfigState {
 		loginTitle:string;
 		loginMini:string;
 		loginMain:string;
-
+		passportLoginUrl: string;
+		passportLogoutUrl: string;
 	};
 }

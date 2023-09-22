@@ -15,6 +15,7 @@ import (
 	"github.com/lishimeng/passport/cmd/profile/static"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
+	"github.com/lishimeng/passport/internal/setup"
 	"net/http"
 	"time"
 )
@@ -103,7 +104,8 @@ func _main() (err error) {
 				return http.FS(static.Static)
 			}).
 			EnableWeb(etc.Config.Web.Listen, ddd.Route).
-			PrintVersion()
+			PrintVersion().
+			ComponentAfter(setup.Setup)
 		return err
 	}, func(s string) {
 		log.Info(s)

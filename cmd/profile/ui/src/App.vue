@@ -16,6 +16,7 @@ import other from '/@/utils/other';
 import {Local, Session} from '/@/utils/storage';
 import mittBus from '/@/utils/mitt';
 import setIntroduction from '/@/utils/setIconfont';
+import {getThemeConfigApi} from "/@/api/theme";
 // import {getThemeConfigApi} from "/@/api/themeconfig";
 
 // 引入组件
@@ -55,7 +56,7 @@ onMounted(() => {
     getThemeConfig()
     // 监听布局配'置弹窗点击打开
     mittBus.on('openSetingsDrawer', () => {
-      setingsRef.value.openDrawer();
+      setingsRef.value.openDrawer()
     });
     // 获取缓存中的布局配置
     /*		if (Local.get('themeConfig')) {
@@ -77,14 +78,14 @@ onUnmounted(() => {
 const getThemeConfig = () => {
   storesThemeConfig.setThemeConfig({themeConfig: themeConfig.value});
   document.documentElement.style.cssText = Local.get('themeConfigStyle');
-  // getThemeConfigApi({}).then(res => {
-  //   if (res && res.code == 200 && Object.keys(res.data).length > 0) {
-  //     setConfig(res.data, themeConfig.value)
-  //   } else {
-  //     storesThemeConfig.setThemeConfig({themeConfig: themeConfig.value});
-  //     document.documentElement.style.cssText = Local.get('themeConfigStyle');
-  //   }
-  // })
+  getThemeConfigApi({}).then(res => {
+    if (res && res.code == 200 && Object.keys(res.data).length > 0) {
+      setConfig(res.data, themeConfig.value)
+    } else {
+      storesThemeConfig.setThemeConfig({themeConfig: themeConfig.value});
+      document.documentElement.style.cssText = Local.get('themeConfigStyle');
+    }
+  })
 }
 const setConfig = async (newArray: any, oldArray: any) => {
   let map = new Map()
@@ -97,6 +98,8 @@ const setConfig = async (newArray: any, oldArray: any) => {
   }
   const json = Object.fromEntries(map);
   storesThemeConfig.setThemeConfig({themeConfig: json});
+  Local.remove('themeConfig');
+  Local.set('themeConfig', themeConfig);
   document.documentElement.style.cssText = Local.get('themeConfigStyle');
 }
 // 监听路由的变化，设置网站标题
