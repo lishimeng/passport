@@ -148,7 +148,9 @@ export const useThemeConfig = defineStore('themeConfig', {
             globalComponentSize: 'large',
             loginMini: '',
             loginMain: '',
-            loginTitle: 'Passport'
+            loginTitle: 'Passport',
+            passportLoginUrl: 'https://passport.thingplecloud.com/login',
+            passportLogoutUrl: 'https://passport.thingplecloud.com/logout',
         },
     }),
     actions: {
