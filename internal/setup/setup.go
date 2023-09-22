@@ -6,6 +6,6 @@ import (
 )
 
 func Setup(ctx context.Context) (err error) {
-	cms.Init(cms.WithName("passport"), cms.WithDatabase())
+	cms.Init(cms.WithName("passport-profile"), cms.WithDatabase())
 	return
 }
