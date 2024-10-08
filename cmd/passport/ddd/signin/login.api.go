@@ -1,15 +1,15 @@
 package signin
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
-	"github.com/lishimeng/app-starter/factory"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/passwd"
+	"github.com/lishimeng/x/container"
 )
 
 type LoginReq struct {
@@ -55,7 +55,7 @@ func getToken(uid int, uCode, loginType string) (tokenVal []byte, err error) {
 
 func genToken(payload token.JwtPayload) (content []byte, err error) {
 	var provider token.JwtProvider
-	err = factory.Get(&provider)
+	err = container.Get(&provider)
 	if err != nil {
 		return
 	}
@@ -64,14 +64,14 @@ func genToken(payload token.JwtPayload) (content []byte, err error) {
 	return
 }
 
-func login(ctx iris.Context) {
+func login(ctx server.Context) {
 	var resp LoginResp
 	var req LoginReq
-	err := ctx.ReadJSON(&req)
+	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "json解析失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	info, err := user.GetUserInfoByUserName(req.UserName)
@@ -79,7 +79,7 @@ func login(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "用户名或密码错误"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	p := passwd.Verify(req.Password, info)
@@ -87,14 +87,14 @@ func login(ctx iris.Context) {
 	if !p {
 		resp.Code = tool.RespCodeError
 		resp.Message = "用户名或密码错误"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	tokenContent, err := getToken(info.Id, info.Code, req.LoginType)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "token获取失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	//cache token
@@ -103,24 +103,24 @@ func login(ctx iris.Context) {
 	}()
 	resp.Code = tool.RespCodeSuccess
 	resp.Token = string(tokenContent)
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
-func codeLogin(ctx iris.Context) {
+func codeLogin(ctx server.Context) {
 	var resp LoginResp
 	var req CodeLoginReq
-	err := ctx.ReadJSON(&req)
+	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "json解析失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	info, err := user.GetUserInfoByUserName(req.UserName)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "请先绑定邮箱/手机"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	//验证码匹配激活邮箱或手机
@@ -133,14 +133,14 @@ func codeLogin(ctx iris.Context) {
 		if err != nil {
 			resp.Code = tool.RespCodeError
 			resp.Message = "请先获取验证码"
-			tool.ResponseJSON(ctx, resp)
+			ctx.Json(resp)
 			return
 		}
 		log.Info("code:%s,%s", value, req.Code)
 		if value != req.Code {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码不正确"
-			tool.ResponseJSON(ctx, resp)
+			ctx.Json(resp)
 			return
 		}
 		info.MobileVerified = model.ActivateEnable
@@ -156,14 +156,14 @@ func codeLogin(ctx iris.Context) {
 		if err != nil {
 			resp.Code = tool.RespCodeError
 			resp.Message = "请先获取验证码"
-			tool.ResponseJSON(ctx, resp)
+			ctx.Json(resp)
 			return
 		}
 		log.Info("code:%s,%s", value, req.Code)
 		if value != req.Code {
 			resp.Code = tool.RespCodeError
 			resp.Message = "验证码不正确"
-			tool.ResponseJSON(ctx, resp)
+			ctx.Json(resp)
 			return
 		}
 		info.EmailVerified = model.ActivateEnable
@@ -176,14 +176,14 @@ func codeLogin(ctx iris.Context) {
 	default:
 		resp.Code = tool.RespCodeError
 		resp.Message = "未匹配到登录平台"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	tokenContent, err := getToken(info.Id, info.Code, req.LoginType)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "token获取失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	//cache token
@@ -192,7 +192,7 @@ func codeLogin(ctx iris.Context) {
 	}()
 	resp.Code = tool.RespCodeSuccess
 	resp.Token = string(tokenContent)
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 type openLoginReq struct {
@@ -200,14 +200,14 @@ type openLoginReq struct {
 	LoginType       string `json:"loginType,omitempty"`
 }
 
-func openLogin(ctx iris.Context) {
+func openLogin(ctx server.Context) {
 	var resp LoginResp
 	var req openLoginReq
-	err := ctx.ReadJSON(&req)
+	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "json解析失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
@@ -218,21 +218,21 @@ func openLogin(ctx iris.Context) {
 		}()
 		resp.Code = tool.RespCodeError
 		resp.Message = "未绑定"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	account, err := user.GetUserInfoById(socialAccount.AccountId)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "未查到记录"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	tokenContent, err := getToken(account.Id, account.Code, req.LoginType)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "token获取失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	//cache token
@@ -242,6 +242,6 @@ func openLogin(ctx iris.Context) {
 	resp.Code = tool.RespCodeSuccess
 	resp.Uid = account.Id
 	resp.Token = string(tokenContent)
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 	return
 }

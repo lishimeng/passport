@@ -1,8 +1,8 @@
 package passwd
 
 import (
-	"github.com/lishimeng/app-starter/digest"
 	"github.com/lishimeng/passport/internal/db/model"
+	"github.com/lishimeng/x/digest"
 )
 
 // 生成密码

@@ -1,6 +1,6 @@
 package model
 
-import "github.com/lishimeng/app-starter/cms"
+import "github.com/lishimeng/cms"
 
 func Tables() (t []interface{}) {
 	t = append(t,

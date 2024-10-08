@@ -1,7 +1,7 @@
 package page
 
 import (
-	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/go-log"
 	"strings"
 )
@@ -11,29 +11,29 @@ type loginModel struct {
 	Path string
 }
 
-func login(ctx iris.Context) {
+func login(ctx server.Context) {
 	var err error
 	var data loginModel
-	path := ctx.URLParam("path")
+	path := ctx.C.URLParam("path")
 	data.Title = "passport"
 	data.Path = checkParams(path)
-	ctx.ViewLayout("layout/main")
-	err = ctx.View("login.html", data)
+	ctx.C.ViewLayout("layout/main")
+	err = ctx.C.View("login.html", data)
 	if err != nil {
-		_, _ = ctx.HTML("<h3>%s</h3>", err.Error())
+		_, _ = ctx.C.HTML("<h3>%s</h3>", err.Error())
 	}
 }
 
-func phoneLogin(ctx iris.Context) {
+func phoneLogin(ctx server.Context) {
 	var err error
 	var data loginModel
-	path := ctx.URLParam("path")
+	path := ctx.C.URLParam("path")
 	data.Title = "passport"
 	data.Path = checkParams(path)
-	ctx.ViewLayout("layout/main")
-	err = ctx.View("phoneLogin.html", data)
+	ctx.C.ViewLayout("layout/main")
+	err = ctx.C.View("phoneLogin.html", data)
 	if err != nil {
-		_, _ = ctx.HTML("<h3>%s</h3>", err.Error())
+		_, _ = ctx.C.HTML("<h3>%s</h3>", err.Error())
 	}
 }
 

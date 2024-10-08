@@ -4,8 +4,8 @@ package theme
 // 动态修改页面配置
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/internal/db/model"
@@ -50,9 +50,9 @@ type configResp struct {
 	Data interface{} `json:"data,omitempty"`
 }
 
-func themeConfig(ctx iris.Context) {
+func themeConfig(ctx server.Context) {
 	var resp configResp
-	configPage := ctx.URLParamDefault("configPage", "")
+	configPage := ctx.C.URLParamDefault("configPage", "")
 	log.Info("configPage:%s", configPage)
 	var themeConfigs []model.ThemeConfig
 	qs := app.GetOrm().Context.QueryTable(new(model.ThemeConfig))
@@ -85,5 +85,5 @@ func themeConfig(ctx iris.Context) {
 	}
 	resp.Data = config
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }

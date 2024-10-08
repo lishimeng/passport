@@ -1,9 +1,9 @@
 package user
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/midware/auth"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
@@ -24,9 +24,9 @@ type UserInfo struct {
 	IsBind int    `json:"isBind,omitempty"`
 }
 
-func GetUserInfo(ctx iris.Context) {
+func GetUserInfo(ctx server.Context) {
 	var resp UserResp
-	ui := ctx.Values().Get(auth.UserInfoKey)
+	ui := ctx.C.Values().Get(auth.UserInfoKey)
 	jwt, ok := ui.(token.JwtPayload)
 	if !ok {
 		return
@@ -36,7 +36,7 @@ func GetUserInfo(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "未查到记录"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	resp.Code = tool.RespCodeSuccess
@@ -54,7 +54,7 @@ func GetUserInfo(ctx iris.Context) {
 	if err == nil {
 		resp.Item.IsBind = 1
 	}
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 	return
 }
 
@@ -64,17 +64,17 @@ type SocialReq struct {
 	Category        string `json:"category,omitempty"`
 }
 
-func BindUser(ctx iris.Context) {
+func BindUser(ctx server.Context) {
 	var req SocialReq
 	var resp app.Response
-	err := ctx.ReadJSON(&req)
+	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "json解析失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
-	ui := ctx.Values().Get(auth.UserInfoKey)
+	ui := ctx.C.Values().Get(auth.UserInfoKey)
 	jwt, ok := ui.(token.JwtPayload)
 	if !ok {
 		return
@@ -84,14 +84,14 @@ func BindUser(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "未查到记录"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	_, err = GetSocialAccountById(req.SocialAccountId, req.Category, account.Id)
 	if err == nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = req.SocialAccountId + "已绑定"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	var socialAccount = model.SocialAccount{
@@ -104,11 +104,11 @@ func BindUser(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "绑定失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 type BindPhoneReq struct {
@@ -116,17 +116,17 @@ type BindPhoneReq struct {
 	Code   string `json:"code,omitempty"`
 }
 
-func BindPhone(ctx iris.Context) {
+func BindPhone(ctx server.Context) {
 	var req BindPhoneReq
 	var resp app.Response
-	err := ctx.ReadJSON(&req)
+	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "json解析失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
-	ui := ctx.Values().Get(auth.UserInfoKey)
+	ui := ctx.C.Values().Get(auth.UserInfoKey)
 	jwt, ok := ui.(token.JwtPayload)
 	if !ok {
 		return
@@ -136,7 +136,7 @@ func BindPhone(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "用户不存在"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	key := string(model.SmsBind) + req.Mobile
@@ -145,14 +145,14 @@ func BindPhone(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "验证码未发送，请重新发送！"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	log.Info("code:%s,%s", value, req.Code)
 	if value != req.Code {
 		resp.Code = tool.RespCodeError
 		resp.Message = "验证码不正确"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	var cols []string
@@ -166,11 +166,11 @@ func BindPhone(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "绑定失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 type BindEmailReq struct {
@@ -178,17 +178,17 @@ type BindEmailReq struct {
 	Code  string `json:"code,omitempty"`
 }
 
-func BindEmail(ctx iris.Context) {
+func BindEmail(ctx server.Context) {
 	var req BindEmailReq
 	var resp app.Response
-	err := ctx.ReadJSON(&req)
+	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "json解析失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
-	ui := ctx.Values().Get(auth.UserInfoKey)
+	ui := ctx.C.Values().Get(auth.UserInfoKey)
 	jwt, ok := ui.(token.JwtPayload)
 	if !ok {
 		return
@@ -198,7 +198,7 @@ func BindEmail(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "用户不存在"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	key := string(model.EmailBind) + req.Email
@@ -207,14 +207,14 @@ func BindEmail(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "验证码未发送，请重新发送！"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	log.Info("code:%s,%s", value, req.Code)
 	if value != req.Code {
 		resp.Code = tool.RespCodeError
 		resp.Message = "验证码不正确"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	var cols []string
@@ -228,9 +228,9 @@ func BindEmail(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "绑定失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }

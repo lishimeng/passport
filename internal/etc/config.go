@@ -1,6 +1,8 @@
 package etc
 
-import "time"
+import (
+	"time"
+)
 
 var Config Configuration
 

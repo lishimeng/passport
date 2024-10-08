@@ -1,11 +1,11 @@
 package signin
 
 import (
-	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/passport/internal/midware"
 )
 
-func Route(root iris.Party) {
+func Route(root server.Router) {
 	root.Post("/login", login)
 	root.Post("/codeLogin", codeLogin)
 	root.Post("/socialLogin", openLogin)

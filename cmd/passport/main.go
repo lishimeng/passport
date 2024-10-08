@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/cache"
-	etc2 "github.com/lishimeng/app-starter/etc"
-	"github.com/lishimeng/app-starter/factory"
+	"github.com/lishimeng/app-starter/midware/template"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
@@ -15,6 +15,7 @@ import (
 	"github.com/lishimeng/passport/cmd/passport/static"
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
+	"github.com/lishimeng/x/container"
 	"net/http"
 	"time"
 )
@@ -40,14 +41,11 @@ func _main() (err error) {
 	configName := "config"
 
 	application := app.New()
-
 	err = application.Start(func(ctx context.Context, builder *app.ApplicationBuilder) error {
 
 		var err error
 
-		err = builder.LoadConfig(&etc.Config, func(loader etc2.Loader) {
-			loader.SetFileSearcher(configName, ".").SetEnvPrefix("").SetEnvSearcher()
-		})
+		err = builder.LoadConfig(&etc.Config, app.WithDefaultCallback(configName))
 		if err != nil {
 			return err
 		}
@@ -79,7 +77,7 @@ func _main() (err error) {
 					token.WithDefaultTTL(etc.TokenTTL),
 				)
 				storage := token.NewLocalStorage(provider)
-				factory.Add(provider)
+				container.Add(provider)
 				inject(storage)
 			})
 		}
@@ -99,6 +97,19 @@ func _main() (err error) {
 			}).
 			EnableCache(redisOpts, cacheOpts).
 			EnableWeb(etc.Config.Web.Listen, setup.Application).
+			ComponentAfter(func(ctx context.Context) (err error) {
+				AppProxy := app.GetWebServer().GetApplication()
+				if AppProxy == nil {
+					log.Info("web server nil")
+					return
+				} else {
+					log.Info("web server start", AppProxy.String())
+					engine := iris.HTML(static.Static, ".html")
+					template.Init(engine)
+					AppProxy.RegisterView(engine)
+				}
+				return
+			}).
 			PrintVersion()
 		return err
 	}, func(s string) {
