@@ -1,6 +1,5 @@
 
-
-FROM golang:1.20 as build
+FROM golang:1.23 as build
 ARG NAME
 ARG VERSION
 ARG COMMIT
@@ -16,6 +15,7 @@ ARG LDFLAGS=" \
     "
 WORKDIR /release
 ADD . .
+
 RUN go mod download && go mod verify
 RUN go build -v --ldflags "${LDFLAGS} -X ${BASE}.Compiler=$(go version | sed 's/[ ][ ]*/_/g')" -o ${NAME} ${APP_PATH}/main.go
 
