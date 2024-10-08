@@ -8,9 +8,8 @@ import (
 )
 
 func Route(root server.Router) {
-
-	p := root.Path("/api")
-	user.Route(p.Path("/user"))
-	theme.Route(p.Path("/theme"))
+	p := root.Party("/api")
+	user.Route(p.Party("/user"))
+	theme.Route(p.Party("/theme"))
 	cms.Router(root)
 }
