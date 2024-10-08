@@ -2,8 +2,8 @@ package signup
 
 import (
 	"github.com/lishimeng/app-starter"
-	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/passport/internal/db/model"
+	"github.com/lishimeng/x/util"
 )
 
 func RegisterAccount(mobile, email, password, name string) (info model.Account, err error) {
@@ -20,7 +20,7 @@ func RegisterAccount(mobile, email, password, name string) (info model.Account, 
 		info.Name = name
 	}
 	info.Status = model.ActivateEnable
-	info.Code = tool.UUIDString() // 随机code 以后升级一下lib,改为tool.uuid
+	info.Code = util.UUIDString() // 随机code 以后升级一下lib,改为tool.uuid
 	_, err = app.GetOrm().Context.Insert(&info)
 	return
 }

@@ -1,9 +1,9 @@
 package oauth
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/midware/oauth/wx/miniwx"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/internal/db/model"
@@ -19,17 +19,17 @@ type AuthorizeTokenResp struct {
 	UnionId        string `json:"unionId,omitempty"`        // social端的用户扩展ID
 }
 
-func authorizeCode(ctx iris.Context) {
+func authorizeCode(ctx server.Context) {
 
 	var err error
 	var resp AuthorizeTokenResp
-	channel := ctx.URLParam("channel")
-	code := ctx.URLParam("code")
-	appId := ctx.URLParam("appId")
+	channel := ctx.C.URLParam("channel")
+	code := ctx.C.URLParam("code")
+	appId := ctx.C.URLParam("appId")
 	if len(code) == 0 {
 		log.Debug("code:[%s]", code)
 		resp.Code = tool.RespCodeError
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	if len(appId) > 0 {
@@ -39,7 +39,7 @@ func authorizeCode(ctx iris.Context) {
 	if err != nil {
 		log.Debug(errors.Wrapf(err, "can't find app_config:[%s:%s]", channel, appId))
 		resp.Code = tool.RespCodeError
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	switch sc.Channel {
@@ -59,12 +59,12 @@ func authorizeCode(ctx iris.Context) {
 		log.Debug(errors.Wrapf(err, "get token failed"))
 		resp.Code = tool.RespCodeError
 		resp.Message = err.Error()
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
 
 func getWxMiniToken(appId, secret, code string) (resp miniwx.WxMiniLoginResp, err error) {

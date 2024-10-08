@@ -16,7 +16,7 @@ func SighUpSendMail(code string, to string) (resp sdk.Response, err error) {
 		return
 	}
 	params := make(map[string]string)
-	params["verrificationCode"] = code
+	params["code"] = code
 	var req = sdk.MailRequest{
 		Template:      template.Template,
 		TemplateParam: params,

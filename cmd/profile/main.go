@@ -6,8 +6,6 @@ import (
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/cache"
-	etc2 "github.com/lishimeng/app-starter/etc"
-	"github.com/lishimeng/app-starter/factory"
 	"github.com/lishimeng/app-starter/persistence"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/go-log"
@@ -16,6 +14,7 @@ import (
 	"github.com/lishimeng/passport/internal/db/model"
 	"github.com/lishimeng/passport/internal/etc"
 	"github.com/lishimeng/passport/internal/setup"
+	"github.com/lishimeng/x/container"
 	"net/http"
 	"time"
 )
@@ -46,9 +45,7 @@ func _main() (err error) {
 
 		var err error
 
-		err = builder.LoadConfig(&etc.Config, func(loader etc2.Loader) {
-			loader.SetFileSearcher(configName, ".").SetEnvPrefix("").SetEnvSearcher()
-		})
+		err = builder.LoadConfig(&etc.Config, app.WithDefaultCallback(configName))
 		if err != nil {
 			return err
 		}
@@ -84,7 +81,7 @@ func _main() (err error) {
 					token.WithAlg("HS256"),
 				)
 				storage := token.NewLocalStorage(provider)
-				factory.Add(provider)
+				container.Add(provider)
 				inject(storage)
 			})
 		}

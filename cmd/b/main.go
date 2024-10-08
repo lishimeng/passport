@@ -6,7 +6,9 @@ import (
 )
 
 func main() {
-	err := buildscript.Generate("lishimeng",
+	err := buildscript.Generate(buildscript.Project{
+		Namespace: "lishimeng",
+	},
 		buildscript.Application{
 			Name:    "passport",
 			AppPath: "cmd/passport",

@@ -2,7 +2,7 @@ package setup
 
 import (
 	"context"
-	"github.com/lishimeng/app-starter/cms"
+	"github.com/lishimeng/cms"
 )
 
 func Setup(ctx context.Context) (err error) {

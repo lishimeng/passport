@@ -1,8 +1,10 @@
 package send
 
-import "github.com/kataras/iris/v12"
+import (
+	"github.com/lishimeng/app-starter/server"
+)
 
-func Route(root iris.Party) {
+func Route(root server.Router) {
 	root.Get("/signInSendCode", signInSendCodeGet) //登录
 	root.Post("/signInSendCode", signInSendCodePost)
 	root.Get("/signUpSendCode", signUpSendCodeGet) //注册

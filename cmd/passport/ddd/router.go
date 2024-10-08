@@ -1,7 +1,7 @@
 package ddd
 
 import (
-	"github.com/kataras/iris/v12"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/passport/cmd/passport/ddd/oauth"
 	"github.com/lishimeng/passport/cmd/passport/ddd/path"
 	"github.com/lishimeng/passport/cmd/passport/ddd/send"
@@ -11,14 +11,14 @@ import (
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
 )
 
-func Route(root *iris.Application) {
+func Route(root server.Router) {
 
-	p := root.Party("/api")
-	signin.Route(p.Party("/sign_in"))
-	signup.Route(p.Party("/register"))
-	user.Route(p.Party("/user"))
-	send.Route(p.Party("/notify"))
-	theme.Route(p.Party("/theme"))
-	oauth.Route(p.Party("/oauth"))
-	path.Router(p.Party("/path"))
+	p := root.Path("/api")
+	signin.Route(p.Path("/sign_in"))
+	signup.Route(p.Path("/register"))
+	user.Route(p.Path("/user"))
+	send.Route(p.Path("/notify"))
+	theme.Route(p.Path("/theme"))
+	oauth.Route(p.Path("/oauth"))
+	path.Router(p.Path("/path"))
 }

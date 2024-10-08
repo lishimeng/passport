@@ -1,7 +1,9 @@
 package path
 
-import "github.com/kataras/iris/v12"
+import (
+	"github.com/lishimeng/app-starter/server"
+)
 
-func Router(root iris.Party) {
+func Router(root server.Router) {
 	root.Get("", GetPathInfo) //登录
 }

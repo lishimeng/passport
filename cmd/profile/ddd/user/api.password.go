@@ -1,30 +1,31 @@
 package user
 
 import (
-	"github.com/kataras/iris/v12"
 	"github.com/lishimeng/app-starter"
 	"github.com/lishimeng/app-starter/midware/auth"
+	"github.com/lishimeng/app-starter/server"
 	"github.com/lishimeng/app-starter/token"
 	"github.com/lishimeng/app-starter/tool"
 	"github.com/lishimeng/go-log"
 	"github.com/lishimeng/passport/cmd/passport/ddd/user"
 	"github.com/lishimeng/passport/internal/passwd"
 )
+
 type PasswordReq struct {
 	Password string `json:"password,omitempty"`
 }
 
-func changePassword(ctx iris.Context) {
+func changePassword(ctx server.Context) {
 	var resp app.Response
 	var req PasswordReq
-	err := ctx.ReadJSON(&req)
+	err := ctx.C.ReadJSON(&req)
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "json解析失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
-	ui := ctx.Values().Get(auth.UserInfoKey)
+	ui := ctx.C.Values().Get(auth.UserInfoKey)
 	jwt, ok := ui.(token.JwtPayload)
 	if !ok {
 		return
@@ -34,7 +35,7 @@ func changePassword(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "未查到记录"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	p := passwd.Generate(req.Password, account)
@@ -43,9 +44,9 @@ func changePassword(ctx iris.Context) {
 	if err != nil {
 		resp.Code = tool.RespCodeError
 		resp.Message = "更新密码失败"
-		tool.ResponseJSON(ctx, resp)
+		ctx.Json(resp)
 		return
 	}
 	resp.Code = tool.RespCodeSuccess
-	tool.ResponseJSON(ctx, resp)
+	ctx.Json(resp)
 }
