@@ -78,7 +78,9 @@ onUnmounted(() => {
 const getThemeConfig = () => {
   storesThemeConfig.setThemeConfig({themeConfig: themeConfig.value});
   document.documentElement.style.cssText = Local.get('themeConfigStyle');
-  getThemeConfigApi({}).then(res => {
+  getThemeConfigApi({
+    skipCache: 1
+  }).then(res => {
     if (res && res.code == 200 && Object.keys(res.data).length > 0) {
       setConfig(res.data, themeConfig.value)
     } else {
@@ -99,7 +101,7 @@ const setConfig = async (newArray: any, oldArray: any) => {
   const json = Object.fromEntries(map);
   storesThemeConfig.setThemeConfig({themeConfig: json});
   Local.remove('themeConfig');
-  Local.set('themeConfig', themeConfig);
+  Local.set('themeConfig', themeConfig.value);
   document.documentElement.style.cssText = Local.get('themeConfigStyle');
 }
 // 监听路由的变化，设置网站标题
